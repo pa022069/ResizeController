@@ -17,7 +17,7 @@ const resizer = function (_option = {
     let wrapperInfo = wrapper.getBoundingClientRect();
 
     // 物件數據
-    let directArray = ['lt', 'tr', 'lb', 'rb'];
+    let directArray = ['lt', 'rt', 'lb', 'rb'];
     let items = document.querySelectorAll(init.item);
 
     const build = function (_item) {

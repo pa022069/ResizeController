@@ -3,7 +3,7 @@ let wrapper = document.querySelector("#box");
 let wrapperInfo = wrapper.getBoundingClientRect();
 
 // 物件數據
-let directArray = ['lt', 'tr', 'lb', 'rb'];
+let directArray = ['lt', 'rt', 'lb', 'rb'];
 let items = document.querySelectorAll(".item");
 
 const init = function (_item) {

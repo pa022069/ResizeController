@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-tw">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        html, body {
+        html,
+        body {
             position: relative;
             display: block;
             margin: 0;
@@ -22,6 +24,15 @@
             height: 500px;
             overflow: hidden;
         }
+
+        .item {
+            position: absolute;
+            display: block;
+            width: 80px;
+            height: 80px;
+            border: 1px solid #000;
+        }
+
         #item {
             position: absolute;
             display: block;
@@ -29,6 +40,7 @@
             height: 80px;
             border: 1px solid #000;
         }
+
         span {
             position: absolute;
             display: block;
@@ -39,26 +51,42 @@
             transition: opacity 0.3s;
             z-index: 1;
         }
+
         span:hover {
             opacity: 1;
         }
+
         span:nth-child(1) {
-            left: 0;top: 0;
+            left: 0;
+            top: 0;
         }
+
         span:nth-child(2) {
-            right: 0;top: 0;
+            right: 0;
+            top: 0;
         }
+
         span:nth-child(3) {
-            left: 0;bottom: 0;
+            left: 0;
+            bottom: 0;
         }
+
         span:nth-child(4) {
-            right: 0;bottom: 0;
+            right: 0;
+            bottom: 0;
         }
     </style>
 </head>
+
 <body>
     <div id="box">
-        <div id="item">
+        <div class="item" id="item">
+            <span data-pos="lt"></span>
+            <span data-pos="rt"></span>
+            <span data-pos="lb"></span>
+            <span data-pos="rb"></span>
+        </div>
+        <div class="item" id="item">
             <span data-pos="lt"></span>
             <span data-pos="rt"></span>
             <span data-pos="lb"></span>
@@ -67,4 +95,5 @@
     </div>
     <script src="index.js"></script>
 </body>
+
 </html>

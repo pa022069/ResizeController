@@ -1,11 +1,35 @@
+const resizer = function (_option = {
+    container: 'body',
+    item: '.item'
+}) {
+    // 宣告
+    const init = {
+        container: _option.container || 'body',
+        item: _option.item || '.item',
+    }
+    console.log(init.container, init.item);
+
+    // 外框數據
+    let wrapper = document.querySelector(init.container);
+    let wrapperInfo = wrapper.getBoundingClientRect();
+
+    // 物件數據
+}
+
+let temp = new resizer({
+    container: '#box',
+    item: '.resizer-item'
+});
+
+////////////////////////////////
+
+
 // 外框數據
-let wrapper = document.getElementById("box");
+let wrapper = document.querySelector("#box");
 let wrapperInfo = wrapper.getBoundingClientRect();
 
-
-
 // 物件數據
-let item = document.querySelectorAll(".item")[1];
+let item = document.querySelectorAll(".item")[0];
 let itemInfo = item.getBoundingClientRect();
 let borderWidth = 1 * 2;
 
@@ -27,7 +51,21 @@ let startPos = {
     y: 0
 };
 
+// Resize 
+let controller = document.querySelectorAll('span');
+for (let target of controller) {
+    target.onmousedown = controlItem;
+}
+let minSize = 40;
+let resizeMoving;
+let resizeTarget;
 
+let isReverse = {
+    x: false,
+    y: false
+}
+
+// function
 function dragDownItem(e) {
     e = e || window.event;
     e.preventDefault();
@@ -83,42 +121,16 @@ function closeDrag() {
     document.onmouseup = null;
     document.onmousemove = null;
 }
+
+
 item.onmousedown = dragDownItem;
-
 // Resize
-
-let controller = document.querySelectorAll('span');
-for (let target of controller) {
-    target.onmousedown = controlItem;
-}
-let minSize = 40;
-let resizeOrigin;
-let resizeMoving;
-let resizeTarget;
-
-let isReverse = {
-    x: false,
-    y: false
-}
-
-function closeResize() {
-    itemInfo = item.getBoundingClientRect();
-    movingPos = {
-        x: itemInfo.x - itemOrigin.x,
-        y: itemInfo.y - itemOrigin.y
-    }
-    item.onmousedown = dragDownItem;
-
-    document.onmouseup = null;
-    document.onmousemove = null;
-}
-
 function controlItem(e) {
     e = e || window.event;
     e.preventDefault();
 
     resizeTarget = e.target.attributes['data-pos'].value;
-    resizeOrigin = {
+    originPos = {
         x: e.clientX,
         y: e.clientY
     }
@@ -133,8 +145,8 @@ function controlResize(e) {
     e.preventDefault();
 
     let resizing = {
-        x: e.clientX - resizeOrigin.x,
-        y: e.clientY - resizeOrigin.y
+        x: e.clientX - originPos.x,
+        y: e.clientY - originPos.y
     }
 
     resizeMoving = {
@@ -148,10 +160,10 @@ function controlResize(e) {
         x: startPos.x + resizeMoving.x,
         y: startPos.y + resizeMoving.y
     }
-    
+
     // 尺寸
     function setResizeWidth() {
-        if(startPos.x < 0) return;
+        if (startPos.x < 0) return;
         if (newResize.width + startPos.x <= wrapperInfo.width && item.clientWidth >= minSize) {
             item.style.width = `${itemInfo.width + resizeMoving.x - 2}px`;
         }
@@ -163,7 +175,7 @@ function controlResize(e) {
         }
     }
     function setResizeHeight() {
-        if(startPos.y < 0) return;
+        if (startPos.y < 0) return;
         if (newResize.height + startPos.y <= wrapperInfo.height && item.clientHeight >= minSize) {
             item.style.height = `${itemInfo.height + resizeMoving.y - 2}px`;
         }
@@ -182,7 +194,7 @@ function controlResize(e) {
         if (startPos.x > 0) {
             if (item.clientWidth <= minSize) return;
             item.style.left = `${startPos.x}px`;
-        } 
+        }
         if (startPos.x < 0) {
             item.style.left = `0px`;
         }
@@ -193,7 +205,7 @@ function controlResize(e) {
         if (startPos.y > 0) {
             if (item.clientHeight <= minSize) return;
             item.style.top = `${startPos.y}px`;
-        } 
+        }
         if (startPos.y < 0) {
             item.style.top = `0px`;
         }
@@ -231,4 +243,16 @@ function controlResize(e) {
     setResizeHeight()
     setResizeX()
     setResizeY()
+}
+
+function closeResize() {
+    itemInfo = item.getBoundingClientRect();
+    movingPos = {
+        x: itemInfo.x - itemOrigin.x,
+        y: itemInfo.y - itemOrigin.y
+    }
+    item.onmousedown = dragDownItem;
+
+    document.onmouseup = null;
+    document.onmousemove = null;
 }

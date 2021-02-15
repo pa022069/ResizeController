@@ -1,3 +1,5 @@
+// git test
+
 const resizer = function (_option = {
     container: 'body',
     item: '.item'

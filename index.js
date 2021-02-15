@@ -7,252 +7,267 @@ const resizer = function (_option = {
         container: _option.container || 'body',
         item: _option.item || '.item',
     }
-    console.log(init.container, init.item);
+    // console.log(init.container, init.item);
 
     // 外框數據
     let wrapper = document.querySelector(init.container);
     let wrapperInfo = wrapper.getBoundingClientRect();
 
     // 物件數據
+    let directArray = ['lt', 'tr', 'lb', 'rb'];
+    let items = document.querySelectorAll(init.item);
+
+    const build = function (_item) {
+        // constructor
+        let itemInfo = _item.getBoundingClientRect();
+        let borderWidth = 1 * 2;
+
+        let itemOrigin = {
+            x: itemInfo.x,
+            y: itemInfo.y
+        }
+
+        let originPos = {
+            x: 0,
+            y: 0
+        };
+        let movingPos = {
+            x: 0,
+            y: 0
+        };
+        let startPos = {
+            x: 0,
+            y: 0
+        };
+
+        let movingArea = {
+            x: 0,
+            y: 0
+        }
+
+
+        // Resize 
+        let controller = _item.querySelectorAll('span');
+        let minSize = 40;
+
+        let isReverse = {
+            x: false,
+            y: false
+        }
+
+        // function
+        function dragDownItem(e) {
+            e = e || window.event;
+            e.preventDefault();
+
+            originPos = {
+                x: e.clientX,
+                y: e.clientY
+            }
+
+            document.onmouseup = closeDrag;
+            document.onmousemove = moveItem;
+        }
+
+        function moveItem(e) {
+            e = e || window.event;
+
+            movingPos = {
+                x: startPos.x + e.clientX - originPos.x,
+                y: startPos.y + e.clientY - originPos.y
+            }
+
+            movingArea = {
+                x: wrapperInfo.width - itemInfo.width,
+                y: wrapperInfo.height - itemInfo.height
+            }
+
+            // position x
+            if (movingPos.x >= 0 && movingPos.x <= movingArea.x) {
+                _item.style.left = `${movingPos.x}px`;
+            }
+            if (movingPos.x < 0) {
+                _item.style.left = `0px`;
+            }
+            if (movingPos.x > movingArea.x) {
+                _item.style.left = `${movingArea.x - borderWidth}px`;
+            };
+            // position y
+            if (movingPos.y >= 0 && movingPos.y <= movingArea.y) {
+                _item.style.top = `${movingPos.y}px`;
+            }
+            if (movingPos.y < 0) {
+                _item.style.top = `0px`;
+            }
+            if (movingPos.y > movingArea.y) {
+                _item.style.top = `${movingArea.y - borderWidth}px`;
+            };
+        }
+
+        function closeDrag() {
+            reset()
+            startPos = {
+                x: itemInfo.x - itemOrigin.x,
+                y: itemInfo.y - itemOrigin.y
+            }
+        }
+
+        // Resize
+        function controlItem(e) {
+            e = e || window.event;
+            e.preventDefault();
+
+            let resizeTarget = e.target.attributes['data-pos'].value;
+            if (resizeTarget === 'lt') {
+                isReverse = {
+                    x: true,
+                    y: true
+                }
+            }
+
+            if (resizeTarget === 'rt') {
+                isReverse = {
+                    x: false,
+                    y: true
+                }
+            }
+
+            if (resizeTarget === 'lb') {
+                isReverse = {
+                    x: true,
+                    y: false
+                }
+            }
+
+            if (resizeTarget === 'rb') {
+                isReverse = {
+                    x: false,
+                    y: false
+                }
+            }
+
+            originPos = {
+                x: e.clientX,
+                y: e.clientY
+            }
+            document.onmousemove = controlResize;
+
+            _item.onmousedown = null;
+            document.onmouseup = closeResize;
+        }
+
+        function controlResize(e) {
+            e = e || window.event;
+            e.preventDefault();
+
+            let resizing = {
+                x: e.clientX - originPos.x,
+                y: e.clientY - originPos.y
+            }
+
+            let resizeMoving = {
+                x: isReverse.x ? -(resizing.x) : resizing.x,
+                y: isReverse.y ? -(resizing.y) : resizing.y,
+            }
+
+            let newResize = {
+                width: resizeMoving.x + itemInfo.width + startPos.x,
+                height: resizeMoving.y + itemInfo.height + startPos.y,
+                x: resizeMoving.x + startPos.x,
+                y: resizeMoving.y + startPos.y
+            }
+
+            // 尺寸
+            function setResizeWidth() {
+                if (startPos.x < 0) return;
+                if (newResize.width <= wrapperInfo.width && _item.clientWidth >= minSize) {
+                    _item.style.width = `${itemInfo.width + resizeMoving.x - 2}px`;
+                }
+                if (newResize.width > wrapperInfo.width) {
+                    _item.style.width = `${wrapperInfo.width - 4 - startPos.x}px`;
+                }
+                if (_item.clientWidth < minSize) {
+                    _item.style.width = `${minSize}px`
+                }
+            }
+            function setResizeHeight() {
+                if (startPos.y < 0) return;
+                if (newResize.height <= wrapperInfo.height && _item.clientHeight >= minSize) {
+                    _item.style.height = `${itemInfo.height + resizeMoving.y - 2}px`;
+                }
+                if (newResize.height > wrapperInfo.height) {
+                    _item.style.height = `${wrapperInfo.height - 4 - startPos.y}px`;
+                }
+                if (_item.clientHeight < minSize) {
+                    _item.style.height = `${minSize}px`
+                }
+            }
+
+            // 座標
+            function setResizeX() {
+                if (!isReverse.x) return;
+                startPos.x = movingPos.x - resizeMoving.x;
+                if (startPos.x > 0) {
+                    if (_item.clientWidth <= minSize) return;
+                    _item.style.left = `${startPos.x}px`;
+                }
+                if (startPos.x < 0) {
+                    _item.style.left = `0px`;
+                }
+            }
+            function setResizeY() {
+                if (!isReverse.y) return;
+                startPos.y = movingPos.y - resizeMoving.y;
+                if (startPos.y > 0) {
+                    if (_item.clientHeight <= minSize) return;
+                    _item.style.top = `${startPos.y}px`;
+                }
+                if (startPos.y < 0) {
+                    _item.style.top = `0px`;
+                }
+            }
+
+            setResizeWidth()
+            setResizeHeight()
+            setResizeX()
+            setResizeY()
+        }
+
+        function closeResize() {
+            reset()
+            _item.onmousedown = dragDownItem;
+
+            movingPos = {
+                x: itemInfo.x - itemOrigin.x,
+                y: itemInfo.y - itemOrigin.y
+            }
+        }
+
+        function reset() {
+            itemInfo = _item.getBoundingClientRect();
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+
+        // start move
+        _item.onmousedown = dragDownItem;
+
+        // start resize
+        for (let target of controller) {
+            target.onmousedown = controlItem;
+        }
+    }
+
+    for (let item of items) {
+        for (let direct of directArray) {
+            let arrow = document.createElement("span");
+            item.appendChild(arrow).setAttribute("data-pos", direct);
+        }
+        new build(item);
+    }
 }
 
-let temp = new resizer({
+let dev = new resizer({
     container: '#box',
-    item: '.resizer-item'
+    item: '.item'
 });
-
-////////////////////////////////
-
-
-// 外框數據
-let wrapper = document.querySelector("#box");
-let wrapperInfo = wrapper.getBoundingClientRect();
-
-// 物件數據
-let item = document.querySelectorAll(".item")[0];
-let itemInfo = item.getBoundingClientRect();
-let borderWidth = 1 * 2;
-
-let itemOrigin = {
-    x: itemInfo.x,
-    y: itemInfo.y
-}
-
-let originPos = {
-    x: 0,
-    y: 0
-};
-let movingPos = {
-    x: 0,
-    y: 0
-};
-let startPos = {
-    x: 0,
-    y: 0
-};
-
-// Resize 
-let controller = document.querySelectorAll('span');
-for (let target of controller) {
-    target.onmousedown = controlItem;
-}
-let minSize = 40;
-let resizeMoving;
-let resizeTarget;
-
-let isReverse = {
-    x: false,
-    y: false
-}
-
-// function
-function dragDownItem(e) {
-    e = e || window.event;
-    e.preventDefault();
-
-    originPos = {
-        x: e.clientX,
-        y: e.clientY
-    }
-
-    document.onmouseup = closeDrag;
-    document.onmousemove = moveItem;
-}
-
-function moveItem(e) {
-    e = e || window.event;
-    e.preventDefault();
-
-    movingPos = {
-        x: startPos.x + e.clientX - originPos.x,
-        y: startPos.y + e.clientY - originPos.y
-    }
-
-    let wrapperWidth = wrapperInfo.width - itemInfo.width;
-
-    if (movingPos.x >= 0 && movingPos.x <= wrapperWidth) {
-        item.style.left = `${movingPos.x}px`;
-    }
-    if (movingPos.x < 0) {
-        item.style.left = `0px`;
-    }
-    if (movingPos.x > wrapperWidth) {
-        item.style.left = `${wrapperWidth - borderWidth}px`;
-    };
-
-    let wrapperHeight = wrapperInfo.height - itemInfo.height;
-
-    if (movingPos.y >= 0 && movingPos.y <= wrapperHeight) {
-        item.style.top = `${movingPos.y}px`;
-    }
-    if (movingPos.y < 0) {
-        item.style.top = `0px`;
-    }
-    if (movingPos.y > wrapperHeight) {
-        item.style.top = `${wrapperHeight - borderWidth}px`;
-    };
-}
-
-function closeDrag() {
-    startPos = {
-        x: item.getBoundingClientRect().x - itemOrigin.x,
-        y: item.getBoundingClientRect().y - itemOrigin.y
-    }
-    document.onmouseup = null;
-    document.onmousemove = null;
-}
-
-
-item.onmousedown = dragDownItem;
-// Resize
-function controlItem(e) {
-    e = e || window.event;
-    e.preventDefault();
-
-    resizeTarget = e.target.attributes['data-pos'].value;
-    originPos = {
-        x: e.clientX,
-        y: e.clientY
-    }
-    document.onmousemove = controlResize;
-
-    item.onmousedown = null;
-    document.onmouseup = closeResize;
-}
-
-function controlResize(e) {
-    e = e || window.event;
-    e.preventDefault();
-
-    let resizing = {
-        x: e.clientX - originPos.x,
-        y: e.clientY - originPos.y
-    }
-
-    resizeMoving = {
-        x: isReverse.x ? -(resizing.x) : resizing.x,
-        y: isReverse.y ? -(resizing.y) : resizing.y,
-    }
-
-    let newResize = {
-        width: resizeMoving.x + itemInfo.width,
-        height: resizeMoving.y + itemInfo.height,
-        x: startPos.x + resizeMoving.x,
-        y: startPos.y + resizeMoving.y
-    }
-
-    // 尺寸
-    function setResizeWidth() {
-        if (startPos.x < 0) return;
-        if (newResize.width + startPos.x <= wrapperInfo.width && item.clientWidth >= minSize) {
-            item.style.width = `${itemInfo.width + resizeMoving.x - 2}px`;
-        }
-        if (newResize.width + startPos.x > wrapperInfo.width) {
-            item.style.width = `${wrapperInfo.width - 4 - startPos.x}px`;
-        }
-        if (item.clientWidth < minSize) {
-            item.style.width = `${minSize}px`
-        }
-    }
-    function setResizeHeight() {
-        if (startPos.y < 0) return;
-        if (newResize.height + startPos.y <= wrapperInfo.height && item.clientHeight >= minSize) {
-            item.style.height = `${itemInfo.height + resizeMoving.y - 2}px`;
-        }
-        if (newResize.height + startPos.y > wrapperInfo.height) {
-            item.style.height = `${wrapperInfo.height - 4 - startPos.y}px`;
-        }
-        if (item.clientHeight < minSize) {
-            item.style.height = `${minSize}px`
-        }
-    }
-
-    // 座標
-    function setResizeX() {
-        if (!isReverse.x) return;
-        startPos.x = movingPos.x - resizeMoving.x;
-        if (startPos.x > 0) {
-            if (item.clientWidth <= minSize) return;
-            item.style.left = `${startPos.x}px`;
-        }
-        if (startPos.x < 0) {
-            item.style.left = `0px`;
-        }
-    }
-    function setResizeY() {
-        if (!isReverse.y) return;
-        startPos.y = movingPos.y - resizeMoving.y;
-        if (startPos.y > 0) {
-            if (item.clientHeight <= minSize) return;
-            item.style.top = `${startPos.y}px`;
-        }
-        if (startPos.y < 0) {
-            item.style.top = `0px`;
-        }
-    }
-
-    if (resizeTarget === 'lt') {
-        isReverse = {
-            x: true,
-            y: true
-        }
-    }
-
-    if (resizeTarget === 'rt') {
-        isReverse = {
-            x: false,
-            y: true
-        }
-    }
-
-    if (resizeTarget === 'lb') {
-        isReverse = {
-            x: true,
-            y: false
-        }
-    }
-
-    if (resizeTarget === 'rb') {
-        isReverse = {
-            x: false,
-            y: false
-        }
-    }
-
-    setResizeWidth()
-    setResizeHeight()
-    setResizeX()
-    setResizeY()
-}
-
-function closeResize() {
-    itemInfo = item.getBoundingClientRect();
-    movingPos = {
-        x: itemInfo.x - itemOrigin.x,
-        y: itemInfo.y - itemOrigin.y
-    }
-    item.onmousedown = dragDownItem;
-
-    document.onmouseup = null;
-    document.onmousemove = null;
-}

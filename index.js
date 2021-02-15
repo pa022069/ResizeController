@@ -1,3 +1,5 @@
+// 合併版本
+
 const resizer = function (_option = {
     container: 'body',
     item: '.item'

@@ -13,6 +13,8 @@
             display: block;
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
         }
 
         #box {
@@ -27,10 +29,21 @@
 
         .item {
             position: absolute;
-            display: block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 80px;
             height: 80px;
-            border: 1px solid #000;
+            border: 1px dashed #000;
+            cursor: move;
+
+        }
+
+        .item p {
+            display: inline;
+            margin: 0;
+            padding: 0;
+            pointer-events: none;
         }
 
         #item {
@@ -43,70 +56,59 @@
 
         span {
             position: absolute;
-            display: block;
+            display: none;
             width: 10px;
             height: 10px;
             background-color: #333;
-            opacity: 0.5;
-            transition: opacity 0.3s;
             z-index: 1;
-        }
-
-        span:hover {
-            opacity: 1;
         }
 
         span:nth-child(1) {
             left: 0;
             top: 0;
+            cursor: nw-resize;
         }
 
         span:nth-child(2) {
             right: 0;
             top: 0;
+            cursor: ne-resize;
         }
 
         span:nth-child(3) {
             left: 0;
             bottom: 0;
+            cursor: sw-resize;
         }
 
         span:nth-child(4) {
             right: 0;
             bottom: 0;
+            cursor: se-resize;
+        }
+
+        .item--active span{
+            display: block;
         }
     </style>
 </head>
 
 <body>
     <div id="box">
-        <div class="item">
-        </div>
-        <div class="item">
-        </div>
-        <div class="item">
-        </div>
-        <script src="index.js"></script>
-        <!-- <div class="item">
-            <span data-pos="lt"></span>
-            <span data-pos="rt"></span>
-            <span data-pos="lb"></span>
-            <span data-pos="rb"></span>
-        </div>
-        <div class="item">
-            <span data-pos="lt"></span>
-            <span data-pos="rt"></span>
-            <span data-pos="lb"></span>
-            <span data-pos="rb"></span>
-        </div>
-        <div class="item">
-            <span data-pos="lt"></span>
-            <span data-pos="rt"></span>
-            <span data-pos="lb"></span>
-            <span data-pos="rb"></span>
-        </div>
-        <script src="_bk.js"></script> -->
     </div>
+    <a href="javascript:void(0)" id="add">add</a>
+    <a href="javascript:void(0)" id="remove">remove</a>
+    <a href="javascript:void(0)" id="delete">delete</a>
+
+    <script src="index.js"></script>
+    <script>
+        let dev = new resizer({
+            container: '#box',
+            add: "#add",
+            remove: "#remove",
+            delete: "#delete"
+        });
+    </script>
 </body>
 
 </html>

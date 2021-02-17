@@ -1,16 +1,22 @@
 // 合併版本
 
-
 const resizer = function (_option = {
     container: 'body',
-    item: '.item'
+    item: '.item',
+    add: '#add',
+    remove: '#remove',
+    delete: '#delete'
 }) {
     // 宣告
     const init = {
         container: _option.container || 'body',
         item: _option.item || '.item',
+        add: _option.add || '#add',
+        remove: _option.remove || '#remove',
+        delete: _option.delete || '#delete'
     }
-    // console.log(init.container, init.item);
+
+    let itemIdx = 0;
 
     // 外框數據
     let wrapper = document.querySelector(init.container);
@@ -18,9 +24,84 @@ const resizer = function (_option = {
 
     // 物件數據
     let directArray = ['lt', 'rt', 'lb', 'rb'];
-    let items = document.querySelectorAll(init.item);
+    let item;
+    let itemActive = null;
+    let itemActiveIdx = null;
 
-    const build = function (_item) {
+    function addTag() {
+        let tags = document.querySelectorAll(init.item);
+
+        for (let [idx, tag] of tags.entries()) {
+            let content = tag.querySelector("p");
+            content.innerText = idx + 1;
+        }
+    }
+
+    function createItem(_index) {
+        let template = document.createElement("div");
+        wrapper.appendChild(template).setAttribute("class", `item item-${itemIdx}`);
+
+        item = document.querySelector(`.item-${itemIdx}`);
+        for (let direct of directArray) {
+            let arrow = document.createElement("span");
+
+            item.appendChild(arrow).setAttribute("data-pos", direct);
+        }
+
+        let text = document.createElement("p");
+        item.appendChild(text);
+
+        let content = item.querySelector("p");
+        content.innerText = _index + 1;
+
+        function returnColor() {
+            function getRandomInt(max) {
+                return Math.floor(Math.random() * Math.floor(max));
+            }
+            return {
+                r: getRandomInt(255),
+                g: getRandomInt(255),
+                b: getRandomInt(255),
+            }
+        }
+
+        item.style.backgroundColor = `rgba(${returnColor().r}, ${returnColor().g}, ${returnColor().b}, 0.5)`;
+        new build(item, itemIdx);
+    }
+
+    function deleteItem(_index = itemIdx) {
+        let item = document.querySelectorAll(init.item)
+        let target = item[item.length - 1];
+        if (!target) return;
+
+        wrapper.removeChild(target);
+    }
+
+    function deleteTargetItem(_item) {
+        itemActive = null;
+        if (!_item) return;
+        wrapper.removeChild(_item);
+    }
+
+    // 封包程式
+    const build = function (_item, _idx) {
+        // active
+        _item.addEventListener("mousedown", function () {
+            let beforeIdx;
+            let nowIdx;
+
+            beforeIdx = itemActiveIdx;
+            itemActive = _item;
+            itemActiveIdx = _idx;
+            nowIdx = _idx;
+
+            document.querySelector(`.item-${nowIdx}`).classList.add("item--active");
+            if(beforeIdx === null || beforeIdx === nowIdx) return;
+            try {
+                document.querySelector(`.item-${beforeIdx}`).classList.remove("item--active");
+            } catch {return}
+        })
+
         // constructor
         let itemInfo = _item.getBoundingClientRect();
         let borderWidth = 1 * 2;
@@ -68,7 +149,7 @@ const resizer = function (_option = {
                 y: e.clientY
             }
 
-            document.onmouseup = closeDrag;
+            document.onmouseup = close;
             document.onmousemove = moveItem;
         }
 
@@ -105,14 +186,6 @@ const resizer = function (_option = {
             if (movingPos.y > movingArea.y) {
                 _item.style.top = `${movingArea.y - borderWidth}px`;
             };
-        }
-
-        function closeDrag() {
-            reset()
-            startPos = {
-                x: itemInfo.x - itemOrigin.x,
-                y: itemInfo.y - itemOrigin.y
-            }
         }
 
         // Resize
@@ -156,7 +229,7 @@ const resizer = function (_option = {
             document.onmousemove = controlResize;
 
             _item.onmousedown = null;
-            document.onmouseup = closeResize;
+            document.onmouseup = close;
         }
 
         function controlResize(e) {
@@ -236,14 +309,20 @@ const resizer = function (_option = {
             setResizeY()
         }
 
-        function closeResize() {
+        function close() {
             reset()
             _item.onmousedown = dragDownItem;
 
+            startPos = {
+                x: itemInfo.x - itemOrigin.x,
+                y: itemInfo.y - itemOrigin.y
+            }
             movingPos = {
                 x: itemInfo.x - itemOrigin.x,
                 y: itemInfo.y - itemOrigin.y
             }
+
+            return startPos;
         }
 
         function reset() {
@@ -261,16 +340,19 @@ const resizer = function (_option = {
         }
     }
 
-    for (let item of items) {
-        for (let direct of directArray) {
-            let arrow = document.createElement("span");
-            item.appendChild(arrow).setAttribute("data-pos", direct);
-        }
-        new build(item);
-    }
-}
+    createItem(0)
 
-let dev = new resizer({
-    container: '#box',
-    item: '.item'
-});
+    document.querySelector(init.add).addEventListener("click", function () {
+        itemIdx += 1;
+        createItem(itemIdx);
+    })
+    document.querySelector(init.remove).addEventListener("click", function () {
+        deleteItem(init.item.length)
+        if (init.item.length === 0) return;
+    })
+    document.querySelector(init.delete).addEventListener("click", function () {
+        if (!itemActive) return;
+        deleteTargetItem(itemActive)
+        if (itemIdx === 0) return;
+    })
+}

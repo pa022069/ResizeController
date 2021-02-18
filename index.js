@@ -25,6 +25,8 @@ const resizer = function (_option = {
     let wrapper = document.querySelector(init.container);
     let wrapperInfo = wrapper.getBoundingClientRect();
 
+    let scale = wrapperInfo.width / 1040;
+
     // 物件數據
     let directArray = ['lt', 'rt', 'lb', 'rb'];
     let item;
@@ -96,10 +98,10 @@ const resizer = function (_option = {
         for (let item of posIdx) {
             let posInfo = item.getBoundingClientRect();
             posArray.push({
-                x: posInfo.x - wrapperInfo.x - 1,
-                y: posInfo.y - wrapperInfo.y - 1,
-                width: posInfo.width,
-                height: posInfo.height
+                x: parseInt((posInfo.x - wrapperInfo.x - 1) / scale),
+                y: parseInt((posInfo.y - wrapperInfo.y - 1) / scale),
+                width: parseInt((posInfo.width) / scale),
+                height: parseInt((posInfo.height) / scale)
             })
         }
         return posArray;
@@ -129,9 +131,6 @@ const resizer = function (_option = {
                 return
             }
         })
-
-        // start
-        let scale = wrapperInfo.width / 1040;
 
         _item.style.left = `${sizeInfo.x * scale}px`;
         _item.style.top = `${sizeInfo.y * scale}px`;
@@ -395,9 +394,9 @@ const resizer = function (_option = {
         if (!itemActive) return;
         deleteTargetItem(itemActive)
     })
-    // document.querySelector(init.get).addEventListener("click", function () {
-    //     console.log(getAllPos())
-    // })
+    document.querySelector(init.get).addEventListener("click", function () {
+        console.log(getAllPos())
+    })
     return {
         getResultPos: getAllPos(),
         addButton: function () {

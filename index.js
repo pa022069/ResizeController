@@ -395,9 +395,9 @@ const resizer = function (_option = {
         if (!itemActive) return;
         deleteTargetItem(itemActive)
     })
-    document.querySelector(init.get).addEventListener("click", function () {
-        console.log(getAllPos())
-    })
+    // document.querySelector(init.get).addEventListener("click", function () {
+    //     console.log(getAllPos())
+    // })
     return {
         getResultPos: getAllPos(),
         addButton: function () {

@@ -1,5 +1,3 @@
-# 使用方式
-
 ## 宣告參數為新的函示
 
 let create = new resizer()

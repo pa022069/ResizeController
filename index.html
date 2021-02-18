@@ -22,8 +22,8 @@
             margin: 30px;
             display: block;
             border: 1px solid #000;
-            width: 400px;
-            height: 500px;
+            width: 700px;
+            height: 700px;
             overflow: hidden;
         }
 
@@ -32,8 +32,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border: 1px dashed #000;
             cursor: move;
 
@@ -87,7 +87,7 @@
             cursor: se-resize;
         }
 
-        .item--active span{
+        .item--active span {
             display: block;
         }
     </style>
@@ -102,12 +102,23 @@
 
     <script src="index.js"></script>
     <script>
-        let dev = new resizer({
-            container: '#box',
-            add: "#add",
-            remove: "#remove",
-            delete: "#delete"
-        });
+        let mapData;
+        let dev;
+        fetch('data.json')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (res) {
+                mapData = JSON.parse(res[0].ImagemapContent).actions
+
+                dev = new resizer({
+                    container: '#box',
+                    add: "#add",
+                    remove: "#remove",
+                    delete: "#delete",
+                    map: mapData
+                });
+            });
     </script>
 </body>
 

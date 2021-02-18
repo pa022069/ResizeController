@@ -1,28 +1,11 @@
-// const { prop, prop2 } = {
-//     prop: function () {
-//         return "success";
-//     },
-//     prop2: {
-//         x: 0,
-//         y: {
-//             x: 0,
-//             y: 0
-//         }
-//     }
-// }
-
-// const [a = 5, b = 7] = [1];
-// console.log(a); // 1
-// console.log(b); // 7
-
 // 合併版本
-
 const resizer = function (_option = {
     container: 'body',
     item: '.item',
     add: '#add',
     remove: '#remove',
-    delete: '#delete'
+    delete: '#delete',
+    map: []
 }) {
     // 宣告
     const init = {
@@ -30,10 +13,11 @@ const resizer = function (_option = {
         item: _option.item || '.item',
         add: _option.add || '#add',
         remove: _option.remove || '#remove',
-        delete: _option.delete || '#delete'
+        delete: _option.delete || '#delete',
+        map: _option.map || []
     }
 
-    let itemIdx = 0;
+    let itemIdx = init.map.length || 0;
 
     // 外框數據
     let wrapper = document.querySelector(init.container);
@@ -45,20 +29,25 @@ const resizer = function (_option = {
     let itemActive = null;
     let itemActiveIdx = null;
 
-    function addTag() {
-        let tags = document.querySelectorAll(init.item);
+    function initReset() {
+        document.querySelector(init.container).innerHTML = "";
+    }
 
-        for (let [idx, tag] of tags.entries()) {
-            let content = tag.querySelector("p");
-            content.innerText = idx + 1;
+    function setStart() {
+        if (itemIdx === 0) {
+            createItem(itemIdx);
+        } else {
+            for (let idx = 0; idx < itemIdx; idx++) {
+                createItem(idx, _option.map[idx].area)
+            }
         }
     }
 
-    function createItem(_index) {
+    function createItem(_index, _info = null) {
         let template = document.createElement("div");
-        wrapper.appendChild(template).setAttribute("class", `item item-${itemIdx}`);
+        wrapper.appendChild(template).setAttribute("class", `item item-${_index}`);
 
-        item = document.querySelector(`.item-${itemIdx}`);
+        item = document.querySelector(`.item-${_index}`);
         for (let direct of directArray) {
             let arrow = document.createElement("span");
 
@@ -83,7 +72,7 @@ const resizer = function (_option = {
         }
 
         item.style.backgroundColor = `rgba(${returnColor().r}, ${returnColor().g}, ${returnColor().b}, 0.5)`;
-        new build(item, itemIdx);
+        new build(item, _index, _info);
     }
 
     function deleteItem(_index = itemIdx) {
@@ -101,7 +90,8 @@ const resizer = function (_option = {
     }
 
     // 封包程式
-    const build = function (_item, _idx) {
+    const build = function (_item, _idx, _info = {x:0, y: 0, width: 100, height: 100}) {
+        if(!_item || _idx < 0) return;
         // active
         _item.addEventListener("mousedown", function () {
             let beforeIdx;
@@ -116,36 +106,45 @@ const resizer = function (_option = {
             if (beforeIdx === null || beforeIdx === nowIdx) return;
             try {
                 document.querySelector(`.item-${beforeIdx}`).classList.remove("item--active");
-            } catch { return }
+            } catch {
+                return
+            }
         })
+
+        // start
+        let scale = wrapperInfo.width / 1040;
+        _item.style.left = `${_info.x * scale}px`;
+        _item.style.top = `${_info.y * scale}px`;
+        _item.style.width = `${_info.width * scale}px`
+        _item.style.height = `${_info.height * scale}px`
 
         // constructor
         let itemInfo = _item.getBoundingClientRect();
         let borderWidth = 1 * 2;
 
         let itemOrigin = {
-            x: itemInfo.x,
-            y: itemInfo.y
+            x: wrapperInfo.x,
+            y: wrapperInfo.y
         }
 
         let originPos = {
             x: 0,
             y: 0
         };
+
         let movingPos = {
             x: 0,
             y: 0
         };
         let startPos = {
-            x: 0,
-            y: 0
+            x: _info.x * scale || 0,
+            y: _info.y * scale || 0
         };
 
         let movingArea = {
             x: 0,
             y: 0
         }
-
 
         // Resize 
         let controller = _item.querySelectorAll('span');
@@ -283,6 +282,7 @@ const resizer = function (_option = {
                     _item.style.width = `${minSize}px`
                 }
             }
+
             function setResizeHeight() {
                 if (startPos.y < 0) return;
                 if (newResize.height <= wrapperInfo.height && _item.clientHeight >= minSize) {
@@ -308,6 +308,7 @@ const resizer = function (_option = {
                     _item.style.left = `0px`;
                 }
             }
+
             function setResizeY() {
                 if (!isReverse.y) return;
                 startPos.y = movingPos.y - resizeMoving.y;
@@ -334,12 +335,12 @@ const resizer = function (_option = {
                 x: itemInfo.x - itemOrigin.x,
                 y: itemInfo.y - itemOrigin.y
             }
+            console.log([itemInfo.x, itemOrigin.x])
+            
             movingPos = {
                 x: itemInfo.x - itemOrigin.x,
                 y: itemInfo.y - itemOrigin.y
             }
-
-            return startPos;
         }
 
         function reset() {
@@ -357,7 +358,11 @@ const resizer = function (_option = {
         }
     }
 
-    createItem(0)
+    // init
+    {
+        initReset()
+        setStart()
+    }
 
     document.querySelector(init.add).addEventListener("click", function () {
         itemIdx += 1;

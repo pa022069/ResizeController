@@ -203,10 +203,10 @@ const controller = function (_option = {
             function setResizeWidth() {
                 if (startPos.x < 0) return;
                 if (newResize.width <= wrapperInfo.width && _item.clientWidth >= minSize) {
-                    _item.style.width = `${itemInfo.width + resizeMoving.x - 2}px`;
+                    _item.style.width = `${itemInfo.width + resizeMoving.x}px`;
                 }
                 if (newResize.width > wrapperInfo.width) {
-                    _item.style.width = `${wrapperInfo.width - 4 - startPos.x}px`;
+                    _item.style.width = `${wrapperInfo.width - startPos.x}px`;
                 }
                 if (_item.clientWidth < minSize) {
                     _item.style.width = `${minSize}px`
@@ -216,10 +216,10 @@ const controller = function (_option = {
             function setResizeHeight() {
                 if (startPos.y < 0) return;
                 if (newResize.height <= wrapperInfo.height && _item.clientHeight >= minSize) {
-                    _item.style.height = `${itemInfo.height + resizeMoving.y - 2}px`;
+                    _item.style.height = `${itemInfo.height + resizeMoving.y}px`;
                 }
                 if (newResize.height > wrapperInfo.height) {
-                    _item.style.height = `${wrapperInfo.height - 4 - startPos.y}px`;
+                    _item.style.height = `${wrapperInfo.height - startPos.y}px`;
                 }
                 if (_item.clientHeight < minSize) {
                     _item.style.height = `${minSize}px`

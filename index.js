@@ -91,14 +91,25 @@ const resizer = function (_option = {
         wrapper.removeChild(_item);
     }
     function getAllPos() {
-        console.log(document.querySelectorAll(init.item))
+        let posIdx = document.querySelectorAll(init.item);
+        let posArray = [];
+        for (let item of posIdx) {
+            let posInfo = item.getBoundingClientRect();
+            posArray.push({
+                x: posInfo.x - wrapperInfo.x - 1,
+                y: posInfo.y - wrapperInfo.y - 1,
+                width: posInfo.width,
+                height: posInfo.height
+            })
+        }
+        return posArray;
     }
 
     // 封包程式
-    const build = function (_item, _idx, _info = {x:0, y: 0, width: 100, height: 100}) {
-        if(!_item || _idx < 0) return;
+    const build = function (_item, _idx, _info = { x: 0, y: 0, width: 100, height: 100 }) {
+        if (!_item || _idx < 0) return;
 
-        let sizeInfo = _info || {x:0, y: 0, width: 100, height: 100};
+        let sizeInfo = _info || { x: 0, y: 0, width: 100, height: 100 };
 
         // active
         _item.addEventListener("mousedown", function () {
@@ -344,7 +355,7 @@ const resizer = function (_option = {
                 x: itemInfo.x - itemOrigin.x,
                 y: itemInfo.y - itemOrigin.y
             }
-            
+
             movingPos = {
                 x: itemInfo.x - itemOrigin.x,
                 y: itemInfo.y - itemOrigin.y
@@ -377,15 +388,29 @@ const resizer = function (_option = {
         createItem(itemIdx);
     })
     document.querySelector(init.remove).addEventListener("click", function () {
-        deleteItem(init.item.length)
         if (init.item.length === 0) return;
+        deleteItem(init.item.length)
     })
     document.querySelector(init.delete).addEventListener("click", function () {
         if (!itemActive) return;
         deleteTargetItem(itemActive)
-        if (itemIdx === 0) return;
     })
     document.querySelector(init.get).addEventListener("click", function () {
-        getAllPos()
+        console.log(getAllPos())
     })
+    return {
+        getResultPos: getAllPos(),
+        addButton: function () {
+            itemIdx += 1;
+            createItem(itemIdx);
+        },
+        removeButton: function () {
+            if (init.item.length === 0) return;
+            deleteItem(init.item.length)
+        },
+        deleteButton: function () {
+            if (!itemActive) return;
+            deleteTargetItem(itemActive)
+        }
+    }
 }

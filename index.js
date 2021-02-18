@@ -5,6 +5,7 @@ const resizer = function (_option = {
     add: '#add',
     remove: '#remove',
     delete: '#delete',
+    get: '#get',
     map: []
 }) {
     // 宣告
@@ -14,6 +15,7 @@ const resizer = function (_option = {
         add: _option.add || '#add',
         remove: _option.remove || '#remove',
         delete: _option.delete || '#delete',
+        get: _option.get || '#get',
         map: _option.map || []
     }
 
@@ -88,10 +90,16 @@ const resizer = function (_option = {
         if (!_item) return;
         wrapper.removeChild(_item);
     }
+    function getAllPos() {
+        console.log(document.querySelectorAll(init.item))
+    }
 
     // 封包程式
     const build = function (_item, _idx, _info = {x:0, y: 0, width: 100, height: 100}) {
         if(!_item || _idx < 0) return;
+
+        let sizeInfo = _info || {x:0, y: 0, width: 100, height: 100};
+
         // active
         _item.addEventListener("mousedown", function () {
             let beforeIdx;
@@ -113,10 +121,11 @@ const resizer = function (_option = {
 
         // start
         let scale = wrapperInfo.width / 1040;
-        _item.style.left = `${_info.x * scale}px`;
-        _item.style.top = `${_info.y * scale}px`;
-        _item.style.width = `${_info.width * scale}px`
-        _item.style.height = `${_info.height * scale}px`
+
+        _item.style.left = `${sizeInfo.x * scale}px`;
+        _item.style.top = `${sizeInfo.y * scale}px`;
+        _item.style.width = `${sizeInfo.width * scale}px`
+        _item.style.height = `${sizeInfo.height * scale}px`
 
         // constructor
         let itemInfo = _item.getBoundingClientRect();
@@ -137,8 +146,8 @@ const resizer = function (_option = {
             y: 0
         };
         let startPos = {
-            x: _info.x * scale || 0,
-            y: _info.y * scale || 0
+            x: sizeInfo.x * scale || 0,
+            y: sizeInfo.y * scale || 0
         };
 
         let movingArea = {
@@ -335,7 +344,6 @@ const resizer = function (_option = {
                 x: itemInfo.x - itemOrigin.x,
                 y: itemInfo.y - itemOrigin.y
             }
-            console.log([itemInfo.x, itemOrigin.x])
             
             movingPos = {
                 x: itemInfo.x - itemOrigin.x,
@@ -376,5 +384,8 @@ const resizer = function (_option = {
         if (!itemActive) return;
         deleteTargetItem(itemActive)
         if (itemIdx === 0) return;
+    })
+    document.querySelector(init.get).addEventListener("click", function () {
+        getAllPos()
     })
 }

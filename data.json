@@ -1,5 +1,12 @@
 [
     {
-        "ImagemapContent": "{\"type\":\"imagemap\",\"baseUrl\":\"PROVIDE_URL_FROM_YOUR_SERVER\",\"altText\":\"This is an imagemap\",\"baseSize\":{\"width\":1040,\"height\":1040},\"actions\":[{\"type\":\"message\",\"area\":{\"x\":0,\"y\":0,\"width\":346,\"height\":520},\"text\":\"按鈕 1 內容\"},{\"type\":\"uri\",\"area\":{\"x\":347,\"y\":0,\"width\":347,\"height\":520},\"linkUri\":\"https://yahoo.com.tw\"},{\"type\":\"message\",\"area\":{\"x\":694,\"y\":0,\"width\":347,\"height\":520},\"text\":\"按鈕 3 內容\"},{\"type\":\"uri\",\"area\":{\"x\":0,\"y\":520,\"width\":346,\"height\":520},\"linkUri\":\"https://yahoo.com.tw\"},{\"type\":\"message\",\"area\":{\"x\":347,\"y\":520,\"width\":347,\"height\":520},\"text\":\"按鈕 5 內容\"},{\"type\":\"uri\",\"area\":{\"x\":694,\"y\":520,\"width\":347,\"height\":520},\"linkUri\":\"https://yahoo.com.tw\"}]}"
-    }
+        "type": "imagemap",
+        "content": {
+          "ImagemapPicSize": "",
+          "ImagemapModelType": "m1",
+          "previewMsg": "預覽訊息",
+          "imageurl": "https://crm.ogilvyone.info/msgPushImg/2020-10-27/1603766577.png",
+          "ImagemapContent": "{\"type\":\"imagemap\",\"baseUrl\":\"PROVIDE_URL_FROM_YOUR_SERVER\",\"altText\":\"This is an imagemap\",\"baseSize\":{\"width\":1040,\"height\":1040},\"actions\":[{\"type\":\"message\",\"area\":{\"x\":0,\"y\":0,\"width\":346,\"height\":520},\"text\":\"按鈕 1 內容\"},{\"type\":\"uri\",\"area\":{\"x\":347,\"y\":0,\"width\":347,\"height\":520},\"linkUri\":\"https://yahoo.com.tw\"},{\"type\":\"message\",\"area\":{\"x\":694,\"y\":0,\"width\":347,\"height\":520},\"text\":\"按鈕 3 內容\"},{\"type\":\"uri\",\"area\":{\"x\":0,\"y\":520,\"width\":346,\"height\":520},\"linkUri\":\"https://yahoo.com.tw\"},{\"type\":\"message\",\"area\":{\"x\":347,\"y\":520,\"width\":347,\"height\":520},\"text\":\"按鈕 5 內容\"},{\"type\":\"uri\",\"area\":{\"x\":694,\"y\":520,\"width\":347,\"height\":520},\"linkUri\":\"https://yahoo.com.tw\"}]}"
+        }
+      }
   ]

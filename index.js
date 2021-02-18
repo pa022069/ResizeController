@@ -1,3 +1,20 @@
+// const { prop, prop2 } = {
+//     prop: function () {
+//         return "success";
+//     },
+//     prop2: {
+//         x: 0,
+//         y: {
+//             x: 0,
+//             y: 0
+//         }
+//     }
+// }
+
+// const [a = 5, b = 7] = [1];
+// console.log(a); // 1
+// console.log(b); // 7
+
 // 合併版本
 
 const resizer = function (_option = {
@@ -96,10 +113,10 @@ const resizer = function (_option = {
             nowIdx = _idx;
 
             document.querySelector(`.item-${nowIdx}`).classList.add("item--active");
-            if(beforeIdx === null || beforeIdx === nowIdx) return;
+            if (beforeIdx === null || beforeIdx === nowIdx) return;
             try {
                 document.querySelector(`.item-${beforeIdx}`).classList.remove("item--active");
-            } catch {return}
+            } catch { return }
         })
 
         // constructor

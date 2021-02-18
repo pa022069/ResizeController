@@ -2,7 +2,7 @@
 
 `package` 為物件移動功能套件  
   
-`project` 為專案應用實力 (imagemap 編輯器))
+`project` 為專案應用實例 (imagemap 編輯器))
 
 
 ## 宣告參數為新的函示

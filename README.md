@@ -17,7 +17,7 @@ map           | 帶入訊息JSON | 空陣列 | 陣列
 ## 直接觸發函式
 
 參數           | 功能  | 範例
---------------|:-----:|-----:| -----
+--------------|:-----:|-----
 getResultPos  | 取得所有按鈕資訊 | create.getResultPos
 addButton()   | 新增按鈕 | create.addButton()
 removeButton()| 移除最新按鈕 | create.removeButton()

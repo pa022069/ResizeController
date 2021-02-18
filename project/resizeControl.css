@@ -1,7 +1,7 @@
 .resizeControl {
     position: relative;
     display: block;
-    border: 1px solid #000;
+    outline: 1px solid #000;
     width: 700px;
     height: 700px;
     overflow: hidden;

@@ -33,6 +33,10 @@ const resizer = function (_option = {
     let itemActive = null;
     let itemActiveIdx = null;
 
+    let beforeIdx;
+    let nowIdx;
+    let saveIdx = [];
+
     function initReset() {
         document.querySelector(init.container).innerHTML = "";
     }
@@ -83,13 +87,14 @@ const resizer = function (_option = {
         let item = document.querySelectorAll(init.item)
         let target = item[item.length - 1];
         if (!target) return;
-
+        saveIdx.pop()
         wrapper.removeChild(target);
     }
 
     function deleteTargetItem(_item) {
         itemActive = null;
         if (!_item) return;
+        saveIdx.splice(nowIdx,1)
         wrapper.removeChild(_item);
     }
     function getAllPos() {
@@ -113,11 +118,10 @@ const resizer = function (_option = {
 
         let sizeInfo = _info || { x: 0, y: 0, width: 100, height: 100 };
 
+        saveIdx.push(_idx);
+
         // active
         _item.addEventListener("mousedown", function () {
-
-            let beforeIdx;
-            let nowIdx;
 
             beforeIdx = itemActiveIdx;
             itemActive = _item;
@@ -417,6 +421,12 @@ const resizer = function (_option = {
         deleteButton: function () {
             if (!itemActive) return;
             deleteTargetItem(itemActive)
+        },
+        activeIdx: function() {
+            return {
+                id: nowIdx+1 || null,
+                index: saveIdx[nowIdx]
+            }
         }
     }
 }

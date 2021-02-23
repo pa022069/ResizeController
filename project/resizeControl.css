@@ -1,15 +1,3 @@
-html, body {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.block {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
 .resizeControl {
     position: relative;
     display: block;

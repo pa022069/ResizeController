@@ -6,7 +6,8 @@ const resizer = function (_option = {
     remove: '#remove',
     delete: '#delete',
     get: '#get',
-    map: []
+    map: [],
+    getActive: function () {}
 }) {
     // 宣告
     const init = {
@@ -16,7 +17,8 @@ const resizer = function (_option = {
         remove: _option.remove || '#remove',
         delete: _option.delete || '#delete',
         get: _option.get || '#get',
-        map: _option.map || []
+        map: _option.map || [],
+        getActive: _option.getActive || function () {}
     }
 
     let itemIdx = init.map.length || 0;
@@ -80,7 +82,8 @@ const resizer = function (_option = {
         }
 
         item.style.backgroundColor = `rgba(${returnColor().r}, ${returnColor().g}, ${returnColor().b}, 0.5)`;
-        new build(item, _index, _info);
+
+        new build(item, _index, _info, init.getActive)
     }
 
     function deleteItem(_index = itemIdx) {
@@ -94,17 +97,18 @@ const resizer = function (_option = {
     function deleteTargetItem(_item) {
         itemActive = null;
         if (!_item) return;
-        saveIdx.splice(nowIdx,1)
+        saveIdx.splice(nowIdx, 1)
         wrapper.removeChild(_item);
     }
+
     function getAllPos() {
         let posIdx = document.querySelectorAll(init.item);
         let posArray = [];
         for (let item of posIdx) {
             let posInfo = item.getBoundingClientRect();
             posArray.push({
-                x: parseInt((posInfo.x - wrapperInfo.x - 1) / scale),
-                y: parseInt((posInfo.y - wrapperInfo.y - 1) / scale),
+                x: parseInt((posInfo.x - wrapperInfo.x) / scale),
+                y: parseInt((posInfo.y - wrapperInfo.y) / scale),
                 width: parseInt((posInfo.width) / scale),
                 height: parseInt((posInfo.height) / scale)
             })
@@ -113,10 +117,20 @@ const resizer = function (_option = {
     }
 
     // 封包程式
-    const build = function (_item, _idx, _info = { x: 0, y: 0, width: 100, height: 100 }) {
+    const build = function (_item, _idx, _info = {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100
+    }, _func) {
         if (!_item || _idx < 0) return;
 
-        let sizeInfo = _info || { x: 0, y: 0, width: 100, height: 100 };
+        let sizeInfo = _info || {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100
+        };
 
         saveIdx.push(_idx);
 
@@ -129,6 +143,12 @@ const resizer = function (_option = {
             nowIdx = _idx;
 
             document.querySelector(`.item-${nowIdx}`).classList.add("item--active");
+
+            _func({
+                id: _idx + 1 || null,
+                index: saveIdx.indexOf(_idx)
+            })
+
             if (beforeIdx === null || beforeIdx === nowIdx) return;
             try {
                 document.querySelector(`.item-${beforeIdx}`).classList.remove("item--active");
@@ -421,12 +441,6 @@ const resizer = function (_option = {
         deleteButton: function () {
             if (!itemActive) return;
             deleteTargetItem(itemActive)
-        },
-        activeIdx: function() {
-            return {
-                id: nowIdx+1 || null,
-                index: saveIdx[nowIdx]
-            }
         }
     }
 }

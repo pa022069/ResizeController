@@ -115,6 +115,7 @@ const resizer = function (_option = {
 
         // active
         _item.addEventListener("mousedown", function () {
+
             let beforeIdx;
             let nowIdx;
 
@@ -139,7 +140,6 @@ const resizer = function (_option = {
 
         // constructor
         let itemInfo = _item.getBoundingClientRect();
-        let borderWidth = 1 * 2;
 
         let itemOrigin = {
             x: wrapperInfo.x,
@@ -209,7 +209,7 @@ const resizer = function (_option = {
                 _item.style.left = `0px`;
             }
             if (movingPos.x > movingArea.x) {
-                _item.style.left = `${movingArea.x - borderWidth}px`;
+                _item.style.left = `${movingArea.x}px`;
             };
             // position y
             if (movingPos.y >= 0 && movingPos.y <= movingArea.y) {
@@ -219,7 +219,7 @@ const resizer = function (_option = {
                 _item.style.top = `0px`;
             }
             if (movingPos.y > movingArea.y) {
-                _item.style.top = `${movingArea.y - borderWidth}px`;
+                _item.style.top = `${movingArea.y}px`;
             };
         }
 
@@ -292,10 +292,10 @@ const resizer = function (_option = {
             function setResizeWidth() {
                 if (startPos.x < 0) return;
                 if (newResize.width <= wrapperInfo.width && _item.clientWidth >= minSize) {
-                    _item.style.width = `${itemInfo.width + resizeMoving.x - 2}px`;
+                    _item.style.width = `${itemInfo.width + resizeMoving.x}px`;
                 }
                 if (newResize.width > wrapperInfo.width) {
-                    _item.style.width = `${wrapperInfo.width - 4 - startPos.x}px`;
+                    _item.style.width = `${wrapperInfo.width - startPos.x}px`;
                 }
                 if (_item.clientWidth < minSize) {
                     _item.style.width = `${minSize}px`
@@ -305,10 +305,10 @@ const resizer = function (_option = {
             function setResizeHeight() {
                 if (startPos.y < 0) return;
                 if (newResize.height <= wrapperInfo.height && _item.clientHeight >= minSize) {
-                    _item.style.height = `${itemInfo.height + resizeMoving.y - 2}px`;
+                    _item.style.height = `${itemInfo.height + resizeMoving.y}px`;
                 }
                 if (newResize.height > wrapperInfo.height) {
-                    _item.style.height = `${wrapperInfo.height - 4 - startPos.y}px`;
+                    _item.style.height = `${wrapperInfo.height - startPos.y}px`;
                 }
                 if (_item.clientHeight < minSize) {
                     _item.style.height = `${minSize}px`
@@ -349,6 +349,13 @@ const resizer = function (_option = {
         function close() {
             reset()
             _item.onmousedown = dragDownItem;
+
+            itemInfo = _item.getBoundingClientRect();
+            wrapperInfo = wrapper.getBoundingClientRect();
+            itemOrigin = {
+                x: wrapperInfo.x,
+                y: wrapperInfo.y
+            }
 
             startPos = {
                 x: itemInfo.x - itemOrigin.x,

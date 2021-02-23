@@ -29,4 +29,4 @@ getResultPos  | 取得所有按鈕資訊 | create.getResultPos
 addButton()   | 新增按鈕 | create.addButton()
 removeButton()| 移除最新按鈕 | create.removeButton()
 deleteButton()| 移除選取按鈕 | create.deleteButton()
-activeIdx()   | 取得編號、索引值 | create.deleteButton()
+activeIdx()   | 取得編號、索引值 | create.activeIdx()

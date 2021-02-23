@@ -94,10 +94,10 @@ const resizer = function (_option = {
         wrapper.removeChild(target);
     }
 
-    function deleteTargetItem(_item) {
+    function deleteTargetItem(_item, _now) {
         itemActive = null;
         if (!_item) return;
-        saveIdx.splice(nowIdx, 1)
+        saveIdx.splice(_now, 1)
         wrapper.removeChild(_item);
     }
 
@@ -142,14 +142,20 @@ const resizer = function (_option = {
             itemActiveIdx = _idx;
             nowIdx = _idx;
 
-            document.querySelector(`.item-${nowIdx}`).classList.add("item--active");
+            document.querySelector(`.item-${_idx}`).classList.add("item--active");
 
-            _func({
-                id: _idx + 1 || null,
-                index: saveIdx.indexOf(_idx)
+            let btnArray = document.querySelectorAll(".item");
+
+            btnArray.forEach((item, idx) => {
+                if (item === _item) {
+                    _func({
+                        id: _idx + 1 || null,
+                        index: idx
+                    })
+                }
             })
 
-            if (beforeIdx === null || beforeIdx === nowIdx) return;
+            if (beforeIdx === null || beforeIdx === _idx) return;
             try {
                 document.querySelector(`.item-${beforeIdx}`).classList.remove("item--active");
             } catch {
@@ -415,15 +421,15 @@ const resizer = function (_option = {
 
     document.querySelector(init.add).addEventListener("click", function () {
         itemIdx += 1;
-        createItem(itemIdx);
+        createItem(itemIdx, nowIdx);
     })
     document.querySelector(init.remove).addEventListener("click", function () {
         if (init.item.length === 0) return;
-        deleteItem(init.item.length)
+        deleteItem(init.item.length, nowIdx)
     })
     document.querySelector(init.delete).addEventListener("click", function () {
         if (!itemActive) return;
-        deleteTargetItem(itemActive)
+        deleteTargetItem(itemActive, nowIdx)
     })
     // document.querySelector(init.get).addEventListener("click", function () {
     //     console.log(getAllPos())

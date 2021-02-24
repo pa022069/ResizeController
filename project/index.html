@@ -8,11 +8,12 @@
     <title>Document</title>
     <link rel="stylesheet" href="resizeControl.css">
 </head>
+
 <body>
-    <div class="resizeControl" id="box">
+    <div class="resizeControl" id="box" style="background-image: url(pic.jpg)">
     </div>
     <a href="javascript:void(0)" id="add">add</a>
-    <a href="javascript:void(0)" id="remove">remove</a>
+    <!-- <a href="javascript:void(0)" id="remove">remove</a> -->
     <a href="javascript:void(0)" id="delete">delete</a>
     <!-- <a href="javascript:void(0)" id="get">get</a> -->
     <script src="index.js"></script>
@@ -28,12 +29,21 @@
                 dev = new resizer({
                     container: '#box',
                     add: "#add",
-                    remove: "#remove",
-                    delete: "#delete",
+                    // remove: "#remove",
+                    delete: {
+                        selector: "#delete",
+                        getDelete: function(res) {
+                            console.log(res)
+                        }
+                    },
                     get: "#get",
-                    map: mapData
+                    map: mapData,
+                    getActive: function (res) {
+                        console.log(res)
+                    }
                 });
             });
     </script>
 </body>
+
 </html>

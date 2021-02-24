@@ -2,21 +2,29 @@
 const resizer = function (_option = {
     container: 'body',
     item: '.item',
-    add: '#add',
-    remove: '#remove',
-    delete: '#delete',
-    get: '#get',
-    map: []
+    add: false,
+    remove: false,
+    delete: {
+        selector: false,
+        getDelete: () => {}
+    },
+    get: false,
+    map: [],
+    getActive: () => {}
 }) {
     // 宣告
     const init = {
         container: _option.container || 'body',
         item: _option.item || '.item',
-        add: _option.add || '#add',
-        remove: _option.remove || '#remove',
-        delete: _option.delete || '#delete',
-        get: _option.get || '#get',
-        map: _option.map || []
+        add: _option.add || false,
+        remove: _option.remove || false,
+        delete: _option.delete || {
+            selector: false,
+            getDelete: () => {}
+        },
+        get: _option.get || false,
+        map: _option.map || [],
+        getActive: _option.getActive || (() => {})
     }
 
     let itemIdx = init.map.length || 0;
@@ -32,6 +40,10 @@ const resizer = function (_option = {
     let item;
     let itemActive = null;
     let itemActiveIdx = null;
+
+    let beforeIdx;
+    let nowIdx;
+    let saveIdx = [];
 
     function initReset() {
         document.querySelector(init.container).innerHTML = "";
@@ -76,55 +88,69 @@ const resizer = function (_option = {
         }
 
         item.style.backgroundColor = `rgba(${returnColor().r}, ${returnColor().g}, ${returnColor().b}, 0.5)`;
-        new build(item, _index, _info);
+
+        new build(item, _index, _info, init.getActive)
     }
 
     function deleteItem(_index = itemIdx) {
         let item = document.querySelectorAll(init.item)
         let target = item[item.length - 1];
         if (!target) return;
-
+        saveIdx.pop()
         wrapper.removeChild(target);
     }
 
-    function deleteTargetItem(_item) {
+    function deleteTargetItem(_item, _now) {
         itemActive = null;
         if (!_item) return;
+        init.delete.getDelete({
+            id: parseInt(_item.textContent),
+            index: _now
+        })
+        saveIdx.splice(_now, 1)
         wrapper.removeChild(_item);
-    }
-    function getAllPos() {
-        let posIdx = document.querySelectorAll(init.item);
-        let posArray = [];
-        for (let item of posIdx) {
-            let posInfo = item.getBoundingClientRect();
-            posArray.push({
-                x: parseInt((posInfo.x - wrapperInfo.x - 1) / scale),
-                y: parseInt((posInfo.y - wrapperInfo.y - 1) / scale),
-                width: parseInt((posInfo.width) / scale),
-                height: parseInt((posInfo.height) / scale)
-            })
-        }
-        return posArray;
     }
 
     // 封包程式
-    const build = function (_item, _idx, _info = { x: 0, y: 0, width: 100, height: 100 }) {
+    const build = function (_item, _idx, _info = {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100
+    }, _func) {
         if (!_item || _idx < 0) return;
 
-        let sizeInfo = _info || { x: 0, y: 0, width: 100, height: 100 };
+        let sizeInfo = _info || {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100
+        };
+
+        saveIdx.push(_idx);
 
         // active
         _item.addEventListener("mousedown", function () {
-            let beforeIdx;
-            let nowIdx;
 
             beforeIdx = itemActiveIdx;
             itemActive = _item;
             itemActiveIdx = _idx;
             nowIdx = _idx;
 
-            document.querySelector(`.item-${nowIdx}`).classList.add("item--active");
-            if (beforeIdx === null || beforeIdx === nowIdx) return;
+            document.querySelector(`.item-${_idx}`).classList.add("item--active");
+
+            let btnArray = document.querySelectorAll(".item");
+
+            btnArray.forEach((item, idx) => {
+                if (item === _item) {
+                    _func({
+                        id: _idx + 1 || null,
+                        index: idx
+                    })
+                }
+            })
+
+            if (beforeIdx === null || beforeIdx === _idx) return;
             try {
                 document.querySelector(`.item-${beforeIdx}`).classList.remove("item--active");
             } catch {
@@ -139,7 +165,6 @@ const resizer = function (_option = {
 
         // constructor
         let itemInfo = _item.getBoundingClientRect();
-        let borderWidth = 1 * 2;
 
         let itemOrigin = {
             x: wrapperInfo.x,
@@ -209,7 +234,7 @@ const resizer = function (_option = {
                 _item.style.left = `0px`;
             }
             if (movingPos.x > movingArea.x) {
-                _item.style.left = `${movingArea.x - borderWidth}px`;
+                _item.style.left = `${movingArea.x}px`;
             };
             // position y
             if (movingPos.y >= 0 && movingPos.y <= movingArea.y) {
@@ -219,7 +244,7 @@ const resizer = function (_option = {
                 _item.style.top = `0px`;
             }
             if (movingPos.y > movingArea.y) {
-                _item.style.top = `${movingArea.y - borderWidth}px`;
+                _item.style.top = `${movingArea.y}px`;
             };
         }
 
@@ -292,10 +317,10 @@ const resizer = function (_option = {
             function setResizeWidth() {
                 if (startPos.x < 0) return;
                 if (newResize.width <= wrapperInfo.width && _item.clientWidth >= minSize) {
-                    _item.style.width = `${itemInfo.width + resizeMoving.x - 2}px`;
+                    _item.style.width = `${itemInfo.width + resizeMoving.x}px`;
                 }
                 if (newResize.width > wrapperInfo.width) {
-                    _item.style.width = `${wrapperInfo.width - 4 - startPos.x}px`;
+                    _item.style.width = `${wrapperInfo.width - startPos.x}px`;
                 }
                 if (_item.clientWidth < minSize) {
                     _item.style.width = `${minSize}px`
@@ -305,10 +330,10 @@ const resizer = function (_option = {
             function setResizeHeight() {
                 if (startPos.y < 0) return;
                 if (newResize.height <= wrapperInfo.height && _item.clientHeight >= minSize) {
-                    _item.style.height = `${itemInfo.height + resizeMoving.y - 2}px`;
+                    _item.style.height = `${itemInfo.height + resizeMoving.y}px`;
                 }
                 if (newResize.height > wrapperInfo.height) {
-                    _item.style.height = `${wrapperInfo.height - 4 - startPos.y}px`;
+                    _item.style.height = `${wrapperInfo.height - startPos.y}px`;
                 }
                 if (_item.clientHeight < minSize) {
                     _item.style.height = `${minSize}px`
@@ -350,6 +375,13 @@ const resizer = function (_option = {
             reset()
             _item.onmousedown = dragDownItem;
 
+            itemInfo = _item.getBoundingClientRect();
+            wrapperInfo = wrapper.getBoundingClientRect();
+            itemOrigin = {
+                x: wrapperInfo.x,
+                y: wrapperInfo.y
+            }
+
             startPos = {
                 x: itemInfo.x - itemOrigin.x,
                 y: itemInfo.y - itemOrigin.y
@@ -382,23 +414,42 @@ const resizer = function (_option = {
         setStart()
     }
 
-    document.querySelector(init.add).addEventListener("click", function () {
-        itemIdx += 1;
-        createItem(itemIdx);
-    })
-    document.querySelector(init.remove).addEventListener("click", function () {
-        if (init.item.length === 0) return;
-        deleteItem(init.item.length)
-    })
-    document.querySelector(init.delete).addEventListener("click", function () {
-        if (!itemActive) return;
-        deleteTargetItem(itemActive)
-    })
+    if (init.add) {
+        document.querySelector(init.add).addEventListener("click", function () {
+            itemIdx += 1;
+            createItem(itemIdx, nowIdx);
+        })
+    }
+    if (init.remove) {
+        document.querySelector(init.remove).addEventListener("click", function () {
+            if (init.item.length === 0) return;
+            deleteItem(init.item.length, nowIdx)
+        })
+    }
+    if (init.delete.selector) {
+        document.querySelector(init.delete.selector).addEventListener("click", function () {
+            if (!itemActive) return;
+            deleteTargetItem(itemActive, nowIdx)
+        })
+    }
     // document.querySelector(init.get).addEventListener("click", function () {
     //     console.log(getAllPos())
     // })
     return {
-        getResultPos: getAllPos(),
+        getResultPos: function () {
+            let posIdx = document.querySelectorAll(init.item);
+            let posArray = [];
+            for (let pos of posIdx) {
+                let posInfo = pos.getBoundingClientRect();
+                posArray.push({
+                    x: parseInt((posInfo.x - wrapperInfo.x) / scale),
+                    y: parseInt((posInfo.y - wrapperInfo.y) / scale),
+                    width: parseInt((posInfo.width) / scale),
+                    height: parseInt((posInfo.height) / scale)
+                })
+            }
+            return posArray;
+        },
         addButton: function () {
             itemIdx += 1;
             createItem(itemIdx);

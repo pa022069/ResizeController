@@ -18,7 +18,7 @@ container     | 容器 | body | css選擇器 (字串)
 add           | 新增按鈕 | #add | css選擇器 (字串)  
 remove        | 移除最新按鈕 | #remove | css選擇器 (字串)  
 delete        | 移除選取按鈕 | #delete | css選擇器 (字串)
-                            123
+              |            |  123.   |
 map           | 帶入訊息JSON | 空陣列 | 陣列
 activeIdx     | callback當前目標編號／索引值 | 空函式 | callback函式
 

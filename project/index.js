@@ -63,7 +63,7 @@ const resizer = function (_option = {
         let template = document.createElement("div");
         wrapper.appendChild(template).setAttribute("class", `item item-${_index}`);
 
-        item = document.querySelector(`.item-${_index}`);
+        item = document.querySelector(`${init.container} .item-${_index}`);
         for (let direct of directArray) {
             let arrow = document.createElement("span");
 
@@ -137,9 +137,9 @@ const resizer = function (_option = {
             itemActiveIdx = _idx;
             nowIdx = _idx;
 
-            document.querySelector(`.item-${_idx}`).classList.add("item--active");
+            document.querySelector(`${init.container} .item-${_idx}`).classList.add("item--active");
 
-            let btnArray = document.querySelectorAll(".item");
+            let btnArray = document.querySelectorAll(`${init.container} .item`);
 
             btnArray.forEach((item, idx) => {
                 if (item === _item) {
@@ -152,7 +152,7 @@ const resizer = function (_option = {
 
             if (beforeIdx === null || beforeIdx === _idx) return;
             try {
-                document.querySelector(`.item-${beforeIdx}`).classList.remove("item--active");
+                document.querySelector(`${init.container} .item-${beforeIdx}`).classList.remove("item--active");
             } catch {
                 return
             }
@@ -437,7 +437,7 @@ const resizer = function (_option = {
     // })
     return {
         getResultPos: function () {
-            let posIdx = document.querySelectorAll(init.item);
+            let posIdx = document.querySelectorAll(`${init.container} ${init.item}`);
             let posArray = [];
             for (let pos of posIdx) {
                 let posInfo = pos.getBoundingClientRect();

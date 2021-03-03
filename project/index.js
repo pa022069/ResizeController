@@ -437,6 +437,8 @@ const resizer = function (_option = {
     // })
     return {
         getResultPos: function () {
+            let wrapperInfo = wrapper.getBoundingClientRect();
+
             let posIdx = document.querySelectorAll(`${init.container} ${init.item}`);
             let posArray = [];
             for (let pos of posIdx) {

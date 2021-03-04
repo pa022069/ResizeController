@@ -1,62 +1,64 @@
-// 合併版本
 const resizer = function (_option = {
     container: 'body',
     item: '.item',
     add: false,
-    remove: false,
     delete: {
         selector: false,
-        getDelete: () => {}
+        getDelete: () => { },
     },
-    get: false,
     map: [],
-    getActive: () => {}
+    getActive: () => { }
 }) {
     // 宣告
     const init = {
         container: _option.container || 'body',
         item: _option.item || '.item',
         add: _option.add || false,
-        remove: _option.remove || false,
         delete: _option.delete || {
             selector: false,
-            getDelete: () => {}
+            getDelete: () => { }
         },
-        get: _option.get || false,
         map: _option.map || [],
-        getActive: _option.getActive || (() => {})
+        getActive: _option.getActive || (() => { })
     }
 
-    let itemIdx = init.map.length || 0;
-
-    // 外框數據
+    // 容器
     let wrapper = document.querySelector(init.container);
     let wrapperInfo = wrapper.getBoundingClientRect();
 
-    let scale = wrapperInfo.width / 1040;
+    let wrapperSize = {
+        width: wrapperInfo.width,
+        height: wrapperInfo.height
+    }
 
-    // 物件數據
-    let directArray = ['lt', 'rt', 'lb', 'rb'];
-    let item;
-    let itemActive = null;
-    let itemActiveIdx = null;
+    let wrapperPos = {
+        x: wrapperInfo.x,
+        y: wrapperInfo.y
+    }
 
     let beforeIdx;
     let nowIdx;
+    let activeId;
     let saveIdx = [];
+
+    // 物件
+    let item;
+
+    let itemArray = [];
+
+    // let itemIdx = 0;
+    let itemIdx = init.map.length-1 || 0;
+
+    // 縮放比例
+    let scale = wrapperSize.width / 1040;
+
+    // 方向
+    let directArray = ['lt', 'rt', 'lb', 'rb'];
+
+    let saveActive;
 
     function initReset() {
         document.querySelector(init.container).innerHTML = "";
-    }
-
-    function setStart() {
-        if (itemIdx === 0) {
-            createItem(itemIdx);
-        } else {
-            for (let idx = 0; idx < itemIdx; idx++) {
-                createItem(idx, _option.map[idx].area)
-            }
-        }
     }
 
     function createItem(_index, _info = null) {
@@ -64,9 +66,9 @@ const resizer = function (_option = {
         wrapper.appendChild(template).setAttribute("class", `item item-${_index}`);
 
         item = document.querySelector(`${init.container} .item-${_index}`);
+
         for (let direct of directArray) {
             let arrow = document.createElement("span");
-
             item.appendChild(arrow).setAttribute("data-pos", direct);
         }
 
@@ -92,22 +94,21 @@ const resizer = function (_option = {
         new build(item, _index, _info, init.getActive)
     }
 
-    function deleteItem(_index = itemIdx) {
-        let item = document.querySelectorAll(init.item)
-        let target = item[item.length - 1];
-        if (!target) return;
-        saveIdx.pop()
-        wrapper.removeChild(target);
+    function setStart() {
+        if (itemIdx === 0) {
+            createItem(itemIdx);
+        } else {
+            for (let idx = 0; idx <= itemIdx; idx++) {
+                createItem(idx, _option.map[idx].area)
+            }
+        }
     }
 
-    function deleteTargetItem(_item, _now) {
+    function deleteTargetItem(_item) {
         itemActive = null;
         if (!_item) return;
-        init.delete.getDelete({
-            id: parseInt(_item.textContent),
-            index: _now
-        })
-        saveIdx.splice(_now, 1)
+        init.delete.getDelete(saveActive)
+        saveIdx.splice(activeId, 1)
         wrapper.removeChild(_item);
     }
 
@@ -131,24 +132,20 @@ const resizer = function (_option = {
 
         // active
         _item.addEventListener("mousedown", function () {
+            beforeIdx = nowIdx;
 
-            beforeIdx = itemActiveIdx;
             itemActive = _item;
-            itemActiveIdx = _idx;
             nowIdx = _idx;
+            activeId = saveIdx.indexOf(_idx);
+
+            saveActive = {
+                id: _idx + 1 || null,
+                index: activeId
+            }
+
+            _func(saveActive)
 
             document.querySelector(`${init.container} .item-${_idx}`).classList.add("item--active");
-
-            let btnArray = document.querySelectorAll(`${init.container} .item`);
-
-            btnArray.forEach((item, idx) => {
-                if (item === _item) {
-                    _func({
-                        id: _idx + 1 || null,
-                        index: idx
-                    })
-                }
-            })
 
             if (beforeIdx === null || beforeIdx === _idx) return;
             try {
@@ -156,6 +153,14 @@ const resizer = function (_option = {
             } catch {
                 return
             }
+        })
+
+        itemArray.push({
+            id: _idx,
+            x: sizeInfo.x * scale,
+            y: sizeInfo.y * scale,
+            width: sizeInfo.width * scale,
+            height: sizeInfo.height * scale
         })
 
         _item.style.left = `${sizeInfo.x * scale}px`;
@@ -167,8 +172,8 @@ const resizer = function (_option = {
         let itemInfo = _item.getBoundingClientRect();
 
         let itemOrigin = {
-            x: wrapperInfo.x,
-            y: wrapperInfo.y
+            x: wrapperPos.x,
+            y: wrapperPos.y
         }
 
         let originPos = {
@@ -408,61 +413,45 @@ const resizer = function (_option = {
         }
     }
 
-    // init
-    {
-        initReset()
-        setStart()
-    }
+    initReset();
+    setStart();
 
     if (init.add) {
         document.querySelector(init.add).addEventListener("click", function () {
             itemIdx += 1;
-            createItem(itemIdx, nowIdx);
-        })
-    }
-    if (init.remove) {
-        document.querySelector(init.remove).addEventListener("click", function () {
-            if (init.item.length === 0) return;
-            deleteItem(init.item.length, nowIdx)
+            createItem(itemIdx);
         })
     }
     if (init.delete.selector) {
         document.querySelector(init.delete.selector).addEventListener("click", function () {
             if (!itemActive) return;
-            deleteTargetItem(itemActive, nowIdx)
+            deleteTargetItem(itemActive)
         })
     }
-    // document.querySelector(init.get).addEventListener("click", function () {
-    //     console.log(getAllPos())
-    // })
+
     return {
         getResultPos: function () {
-            let wrapperInfo = wrapper.getBoundingClientRect();
+            function getPos(el) {
+                for (var lx=0, ly=0;
+                     el != null;
+                     lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+                return {x: lx,y: ly};
+            }
+            let wrapperPos = getPos(wrapper);
 
             let posIdx = document.querySelectorAll(`${init.container} ${init.item}`);
             let posArray = [];
             for (let pos of posIdx) {
-                let posInfo = pos.getBoundingClientRect();
+                let itemSize = pos.getBoundingClientRect();
+                let itemPos = getPos(pos);
                 posArray.push({
-                    x: parseInt((posInfo.x - wrapperInfo.x) / scale),
-                    y: parseInt((posInfo.y - wrapperInfo.y) / scale),
-                    width: parseInt((posInfo.width) / scale),
-                    height: parseInt((posInfo.height) / scale)
+                    x: parseInt((itemPos.x - wrapperPos.x) / scale),
+                    y: parseInt((itemPos.y - wrapperPos.y) / scale),
+                    width: parseInt((itemSize.width) / scale),
+                    height: parseInt((itemSize.height) / scale)
                 })
             }
             return posArray;
-        },
-        addButton: function () {
-            itemIdx += 1;
-            createItem(itemIdx);
-        },
-        removeButton: function () {
-            if (init.item.length === 0) return;
-            deleteItem(init.item.length)
-        },
-        deleteButton: function () {
-            if (!itemActive) return;
-            deleteTargetItem(itemActive)
         }
     }
 }

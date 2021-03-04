@@ -15,10 +15,10 @@
     <a href="javascript:void(0)" id="add">add</a>
     <a href="javascript:void(0)" id="delete">delete</a>
 
-    <!-- <div class="resizeControl" id="box1" style="background-image: url(pic.jpg)">
+    <div class="resizeControl" id="box1" style="background-image: url(pic.jpg)">
     </div>
     <a href="javascript:void(0)" id="add1">add</a>
-    <a href="javascript:void(0)" id="delete1">delete</a> -->
+    <a href="javascript:void(0)" id="delete1">delete</a>
     <script src="index.js"></script>
     <script>
         let mapData;
@@ -45,21 +45,21 @@
                         console.log(res)
                     }
                 });
-                // dev1 = new resizer({
-                //     container: '#box1',
-                //     add: "#add1",
-                //     // remove: "#remove",
-                //     delete: {
-                //         selector: "#delete1",
-                //         getDelete: function(res) {
-                //             console.log(res)
-                //         }
-                //     },
-                //     map: mapData,
-                //     getActive: function (res) {
-                //         console.log(res)
-                //     }
-                // });
+                dev1 = new resizer({
+                    container: '#box1',
+                    add: "#add1",
+                    // remove: "#remove",
+                    delete: {
+                        selector: "#delete1",
+                        getDelete: function(res) {
+                            console.log(res)
+                        }
+                    },
+                    map: mapData,
+                    getActive: function (res) {
+                        console.log(res)
+                    }
+                });
             });
     </script>
 </body>

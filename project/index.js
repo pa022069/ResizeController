@@ -452,6 +452,14 @@ const resizer = function (_option = {
                 })
             }
             return posArray;
+        },
+        addButton: function () {
+            itemIdx += 1;
+            createItem(itemIdx);
+        },
+        deleteButton: function () {
+            if (!itemActive) return;
+            deleteTargetItem(itemActive)
         }
     }
 }

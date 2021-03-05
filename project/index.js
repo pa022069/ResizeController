@@ -22,6 +22,9 @@ const resizer = function (_option = {
         getActive: _option.getActive || (() => { })
     }
 
+    // 暫存
+    let saveData = null;
+
     // 容器
     let wrapper = document.querySelector(init.container);
     let wrapperInfo = wrapper.getBoundingClientRect();
@@ -47,7 +50,7 @@ const resizer = function (_option = {
     let itemArray = [];
 
     // let itemIdx = 0;
-    let itemIdx = init.map.length-1 || 0;
+    let itemIdx = init.map.length - 1 || 0;
 
     // 縮放比例
     let scale = wrapperSize.width / 1040;
@@ -59,6 +62,30 @@ const resizer = function (_option = {
 
     function initReset() {
         document.querySelector(init.container).innerHTML = "";
+    }
+
+    function updateInfo() {
+        function getPos(el) {
+            for (var lx = 0, ly = 0;
+                el != null;
+                lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+            return { x: lx, y: ly };
+        }
+        let wrapperPos = getPos(wrapper);
+
+        let posIdx = document.querySelectorAll(`${init.container} ${init.item}`);
+        let posArray = [];
+        for (let pos of posIdx) {
+            let itemSize = pos.getBoundingClientRect();
+            let itemPos = getPos(pos);
+            posArray.push({
+                x: parseInt((itemPos.x - wrapperPos.x) / scale),
+                y: parseInt((itemPos.y - wrapperPos.y) / scale),
+                width: parseInt((itemSize.width) / scale),
+                height: parseInt((itemSize.height) / scale)
+            })
+        }
+        return posArray;
     }
 
     function createItem(_index, _info = null) {
@@ -91,7 +118,7 @@ const resizer = function (_option = {
 
         item.style.backgroundColor = `rgba(${returnColor().r}, ${returnColor().g}, ${returnColor().b}, 0.5)`;
 
-        new build(item, _index, _info, init.getActive)
+        new build(item, _index, _info, init.getActive);
     }
 
     function setStart() {
@@ -107,9 +134,10 @@ const resizer = function (_option = {
     function deleteTargetItem(_item) {
         itemActive = null;
         if (!_item) return;
-        init.delete.getDelete(saveActive)
-        saveIdx.splice(activeId, 1)
+        init.delete.getDelete(saveActive);
+        saveIdx.splice(activeId, 1);
         wrapper.removeChild(_item);
+        saveData = updateInfo();
     }
 
     // 封包程式
@@ -169,6 +197,7 @@ const resizer = function (_option = {
         _item.style.height = `${sizeInfo.height * scale}px`
 
         // constructor
+        saveData = updateInfo();
         let itemInfo = _item.getBoundingClientRect();
 
         let itemOrigin = {
@@ -377,7 +406,6 @@ const resizer = function (_option = {
         }
 
         function close() {
-            reset()
             _item.onmousedown = dragDownItem;
 
             itemInfo = _item.getBoundingClientRect();
@@ -396,12 +424,15 @@ const resizer = function (_option = {
                 x: itemInfo.x - itemOrigin.x,
                 y: itemInfo.y - itemOrigin.y
             }
+            reset()
         }
 
         function reset() {
             itemInfo = _item.getBoundingClientRect();
             document.onmouseup = null;
             document.onmousemove = null;
+
+            saveData = updateInfo();
         }
 
         // start move
@@ -413,8 +444,10 @@ const resizer = function (_option = {
         }
     }
 
-    initReset();
-    setStart();
+    {
+        initReset();
+        setStart();
+    }
 
     if (init.add) {
         document.querySelector(init.add).addEventListener("click", function () {
@@ -430,29 +463,7 @@ const resizer = function (_option = {
     }
 
     return {
-        getResultPos: function () {
-            function getPos(el) {
-                for (var lx=0, ly=0;
-                     el != null;
-                     lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
-                return {x: lx,y: ly};
-            }
-            let wrapperPos = getPos(wrapper);
-
-            let posIdx = document.querySelectorAll(`${init.container} ${init.item}`);
-            let posArray = [];
-            for (let pos of posIdx) {
-                let itemSize = pos.getBoundingClientRect();
-                let itemPos = getPos(pos);
-                posArray.push({
-                    x: parseInt((itemPos.x - wrapperPos.x) / scale),
-                    y: parseInt((itemPos.y - wrapperPos.y) / scale),
-                    width: parseInt((itemSize.width) / scale),
-                    height: parseInt((itemSize.height) / scale)
-                })
-            }
-            return posArray;
-        },
+        getResultPos: () => saveData,
         addButton: function () {
             itemIdx += 1;
             createItem(itemIdx);

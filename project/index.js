@@ -10,7 +10,7 @@ const resizer = function (_option = {
     getActive: () => { }
 }) {
     // 宣告
-    const init = {
+    let init = {
         container: _option.container || 'body',
         item: _option.item || '.item',
         add: _option.add || false,
@@ -61,7 +61,44 @@ const resizer = function (_option = {
     let saveActive;
 
     function initReset() {
-        document.querySelector(init.container).innerHTML = "";
+        return new Promise((resolve, reject) => {
+            init = {
+                container: _option.container || 'body',
+                item: _option.item || '.item',
+                add: _option.add || false,
+                delete: _option.delete || {
+                    selector: false,
+                    getDelete: () => { }
+                },
+                map: _option.map || [],
+                getActive: _option.getActive || (() => { })
+            }
+            wrapper = document.querySelector(init.container);
+            wrapperInfo = wrapper.getBoundingClientRect();
+            wrapperSize = {
+                width: wrapperInfo.width,
+                height: wrapperInfo.height
+            }
+            wrapperPos = {
+                x: wrapperInfo.x,
+                y: wrapperInfo.y
+            }
+            saveData = null;
+            saveIdx = [];
+            itemArray = [];
+            beforeIdx;
+            nowIdx = null;
+            activeId = null;
+            saveIdx = [];
+            item = null;
+            itemArray = [];
+            itemIdx = init.map.length - 1 || 0;
+            scale = wrapperSize.width / 1040;
+            document.querySelector(init.container).innerHTML = "";
+            saveActive;
+            resolve();
+            reject();
+        })
     }
 
     function updateInfo() {
@@ -444,10 +481,11 @@ const resizer = function (_option = {
         }
     }
 
-    {
-        initReset();
+    async function start() {
+        await initReset();
         setStart();
     }
+    start();
 
     if (init.add) {
         document.querySelector(init.add).addEventListener("click", function () {

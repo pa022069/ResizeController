@@ -30,7 +30,7 @@
             })
             .then(function (res) {
                 mapData = JSON.parse(res[0].content.ImagemapContent).actions
-                dev = new resizer({
+                dev = resizer({
                     container: '#box',
                     add: "#add",
                     // remove: "#remove",
@@ -45,7 +45,7 @@
                         console.log(res)
                     }
                 });
-                dev1 = new resizer({
+                dev1 = resizer({
                     container: '#box1',
                     add: "#add1",
                     // remove: "#remove",

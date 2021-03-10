@@ -95,7 +95,10 @@ const resizer = function (_option = {
             itemIdx = init.map.length - 1 || 0;
             scale = wrapperSize.width / 1040;
             document.querySelector(init.container).innerHTML = "";
-            saveActive;
+            saveActive = null;
+            document.querySelector(init.add).removeEventListener("click", addItem);
+            document.querySelector(init.delete.selector).removeEventListener("click", deleteItem);
+
             resolve();
             reject();
         })
@@ -487,17 +490,22 @@ const resizer = function (_option = {
     }
     start();
 
+    function addItem() {
+        itemIdx += 1;
+        console.log(itemIdx)
+        createItem(itemIdx);
+    }
+
+    function deleteItem() {
+        if (!itemActive) return;
+        deleteTargetItem(itemActive)
+    }
+
     if (init.add) {
-        document.querySelector(init.add).addEventListener("click", function () {
-            itemIdx += 1;
-            createItem(itemIdx);
-        })
+        document.querySelector(init.add).onmousedown = addItem;
     }
     if (init.delete.selector) {
-        document.querySelector(init.delete.selector).addEventListener("click", function () {
-            if (!itemActive) return;
-            deleteTargetItem(itemActive)
-        })
+        document.querySelector(init.delete.selector).onmousedown = deleteItem;
     }
 
     return {

@@ -96,8 +96,6 @@ const resizer = function (_option = {
             scale = wrapperSize.width / 1040;
             document.querySelector(init.container).innerHTML = "";
             saveActive = null;
-            document.querySelector(init.add).removeEventListener("click", addItem);
-            document.querySelector(init.delete.selector).removeEventListener("click", deleteItem);
 
             resolve();
             reject();

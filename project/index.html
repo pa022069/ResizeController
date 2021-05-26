@@ -2,66 +2,66 @@
 <html lang="zh-tw">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="resizeControl.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="resizeControl.css">
 </head>
 
 <body>
-    <div class="resizeControl" id="box" style="background-image: url(pic.jpg)">
-    </div>
-    <a href="javascript:void(0)" id="add">add</a>
-    <a href="javascript:void(0)" id="delete">delete</a>
+  <div class="resizeControl" id="box" style="background-image: url(pic.jpg)">
+  </div>
+  <a href="javascript:void(0)" id="add">add</a>
+  <a href="javascript:void(0)" id="delete">delete</a>
 
-    <div class="resizeControl" id="box1" style="background-image: url(pic.jpg)">
-    </div>
-    <a href="javascript:void(0)" id="add1">add</a>
-    <a href="javascript:void(0)" id="delete1">delete</a>
-    <script src="index.js"></script>
-    <script>
-        let mapData;
-        let dev;
-        let dev1;
-        fetch('data.json')
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (res) {
-                mapData = JSON.parse(res[0].content.ImagemapContent).actions
-                dev = resizer({
-                    container: '#box',
-                    add: "#add",
-                    // remove: "#remove",
-                    delete: {
-                        selector: "#delete",
-                        getDelete: function(res) {
-                            console.log(res)
-                        }
-                    },
-                    map: mapData,
-                    getActive: function (res) {
-                        console.log(res)
-                    }
-                });
-                dev1 = resizer({
-                    container: '#box1',
-                    add: "#add1",
-                    // remove: "#remove",
-                    delete: {
-                        selector: "#delete1",
-                        getDelete: function(res) {
-                            console.log(res)
-                        }
-                    },
-                    map: mapData,
-                    getActive: function (res) {
-                        console.log(res)
-                    }
-                });
-            });
-    </script>
+  <div class="resizeControl" id="box1" style="background-image: url(pic.jpg)">
+  </div>
+  <a href="javascript:void(0)" id="add1">add</a>
+  <a href="javascript:void(0)" id="delete1">delete</a>
+  <script src="index.js"></script>
+  <script>
+    let mapData;
+    let dev;
+    let dev1;
+    fetch('data.json')
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (res) {
+        mapData = JSON.parse(res[0].content.ImagemapContent).actions
+        dev = resizer({
+          container: '#box',
+          add: "#add",
+          // remove: "#remove",
+          delete: {
+            selector: "#delete",
+            getDelete: function (res) {
+              console.log(res)
+            }
+          },
+          map: mapData,
+          getActive: function (res) {
+            console.log(res)
+          }
+        });
+        dev1 = resizer({
+          container: '#box1',
+          add: "#add1",
+          // remove: "#remove",
+          delete: {
+            selector: "#delete1",
+            getDelete: function (res) {
+              console.log(res)
+            }
+          },
+          map: mapData,
+          getActive: function (res) {
+            console.log(res)
+          }
+        });
+      });
+  </script>
 </body>
 
 </html>

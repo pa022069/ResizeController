@@ -16,6 +16,7 @@ let create = new resizer()
 --------------|:-----:|:-----:|:-----:
 container     | 容器 | body | css選擇器 (字串) 
 add           | 新增按鈕 | #add | css選擇器 (字串)  
+wrap          | 外框大小 | {width: 1040, height: 1040} | 物件 {width: int, height: int}
 delete        | 移除選取按鈕 <br> 取得刪除按鈕的編號／索引值 | selector: #delete <br> getDelete: () => {}  | css選擇器 (字串) <br> callback函式
 map           | 帶入訊息JSON | 空陣列 | 陣列
 activeIdx     | callback當前目標編號／索引值 | 空函式 | callback函式

@@ -2,6 +2,10 @@ const resizer = function (_option = {
   container: 'body',
   item: '.item',
   add: false,
+  wrap: {
+    width: 1040,
+    height: 1040
+  },
   delete: {
     selector: false,
     getDelete: () => { },
@@ -15,16 +19,16 @@ const resizer = function (_option = {
     container: _option.container || 'body',
     item: _option.item || '.item',
     add: _option.add || false,
+    wrap: {
+      width: _option.map ? _option.map.baseSize.width : _option.wrap.width,
+      height: _option.map ? _option.map.baseSize.height : _option.wrap.height
+    },
     delete: _option.delete || {
       selector: false,
       getDelete: () => { }
     },
-    map: _option.map || [],
+    map: _option.map ? _option.map.actions : [],
     getActive: _option.getActive || (() => { }),
-    size: {
-      x: 1040,
-      y: 1040
-    }
   }
 
   // 暫存
@@ -32,6 +36,8 @@ const resizer = function (_option = {
 
   // 容器
   let wrapper = document.querySelector(init.container);
+  wrapper.style.width = `700px`;
+  wrapper.style.height = `${init.wrap.height * (700 / init.wrap.width)}px`;
   let wrapperInfo = wrapper.getBoundingClientRect();
 
   let wrapperSize = {
@@ -59,7 +65,8 @@ const resizer = function (_option = {
   let itemIdx = init.map.length || 0;
 
   // 縮放比例
-  let scale = wrapperSize.width / 1040;
+  let scaleX = wrapperSize.width / init.wrap.width;
+  let scaleY = wrapperSize.height / init.wrap.height;
 
   // 方向
   let directArray = ['lt', 'rt', 'lb', 'rb'];
@@ -72,15 +79,22 @@ const resizer = function (_option = {
         container: _option.container || 'body',
         item: _option.item || '.item',
         add: _option.add || false,
+        wrap: {
+          width: _option.map ? _option.map.baseSize.width : _option.wrap.width,
+          height: _option.map ? _option.map.baseSize.height : _option.wrap.height
+        },
         delete: _option.delete || {
           selector: false,
           getDelete: () => { }
         },
-        map: _option.map || [],
+        map: _option.map ? _option.map.actions : [],
         getActive: _option.getActive || (() => { })
       }
       wrapper = document.querySelector(init.container);
+      wrapper.style.width = `700px`;
+      wrapper.style.height = `${init.wrap.height * (700 / init.wrap.width)}px`;
       wrapperInfo = wrapper.getBoundingClientRect();
+
       wrapperSize = {
         width: wrapperInfo.width,
         height: wrapperInfo.height
@@ -100,7 +114,6 @@ const resizer = function (_option = {
       itemArray = [];
       itemIdx = init.map.length || 0;
       // itemIdx = init.map.length - 1 || 0;
-      scale = wrapperSize.width / 1040;
       document.querySelector(init.container).innerHTML = "";
       saveActive = null;
 
@@ -124,10 +137,10 @@ const resizer = function (_option = {
       let itemSize = pos.getBoundingClientRect();
       let itemPos = getPos(pos);
       posArray.push({
-        x: parseInt((itemPos.x - wrapperPos.x) / scale),
-        y: parseInt((itemPos.y - wrapperPos.y) / scale),
-        width: parseInt((itemSize.width) / scale),
-        height: parseInt((itemSize.height) / scale)
+        x: parseInt((itemPos.x - wrapperPos.x) / scaleX),
+        y: parseInt((itemPos.y - wrapperPos.y) / scaleY),
+        width: parseInt((itemSize.width) / scaleX),
+        height: parseInt((itemSize.height) / scaleY)
       })
     }
     return posArray;
@@ -160,9 +173,7 @@ const resizer = function (_option = {
         b: getRandomInt(255),
       }
     }
-
     item.style.backgroundColor = `rgba(${returnColor().r}, ${returnColor().g}, ${returnColor().b}, 0.5)`;
-
     new build(item, _index, _info, init.getActive);
   }
 
@@ -171,7 +182,7 @@ const resizer = function (_option = {
       createItem(itemIdx);
     } else {
       for (let idx = 0; idx < itemIdx; idx++) {
-        createItem(idx, _option.map[idx].area)
+        createItem(idx, _option.map.actions[idx].area)
       }
     }
   }
@@ -229,16 +240,16 @@ const resizer = function (_option = {
 
     itemArray.push({
       id: _idx,
-      x: sizeInfo.x * scale,
-      y: sizeInfo.y * scale,
-      width: sizeInfo.width * scale,
-      height: sizeInfo.height * scale
+      x: sizeInfo.x * scaleX,
+      y: sizeInfo.y * scaleY,
+      width: sizeInfo.width * scaleX,
+      height: sizeInfo.height * scaleY
     })
 
-    _item.style.left = `${sizeInfo.x * scale}px`;
-    _item.style.top = `${sizeInfo.y * scale}px`;
-    _item.style.width = `${sizeInfo.width * scale}px`
-    _item.style.height = `${sizeInfo.height * scale}px`
+    _item.style.left = `${sizeInfo.x * scaleX}px`;
+    _item.style.top = `${sizeInfo.y * scaleY}px`;
+    _item.style.width = `${sizeInfo.width * scaleX}px`
+    _item.style.height = `${sizeInfo.height * scaleY}px`
 
     // constructor
     saveData = updateInfo();
@@ -259,8 +270,8 @@ const resizer = function (_option = {
       y: 0
     };
     let startPos = {
-      x: sizeInfo.x * scale || 0,
-      y: sizeInfo.y * scale || 0
+      x: sizeInfo.x * scaleX || 0,
+      y: sizeInfo.y * scaleY || 0
     };
 
     let movingArea = {

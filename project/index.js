@@ -15,13 +15,17 @@ const resizer = function (_option = {
   size: {}
 }) {
   // 宣告
+  const wrapSize = {
+    width: _option.wrap ? _option.wrap.width : 1040,
+    height: _option.wrap ? _option.wrap.height : 1040
+  };
   let init = {
     container: _option.container || 'body',
     item: _option.item || '.item',
     add: _option.add || false,
     wrap: {
-      width: _option.map ? _option.map.baseSize.width : _option.wrap.width,
-      height: _option.map ? _option.map.baseSize.height : _option.wrap.height
+      width: _option.map ? _option.map.baseSize.width : wrapSize.width,
+      height: _option.map ? _option.map.baseSize.height : wrapSize.height
     },
     delete: _option.delete || {
       selector: false,
@@ -80,8 +84,8 @@ const resizer = function (_option = {
         item: _option.item || '.item',
         add: _option.add || false,
         wrap: {
-          width: _option.map ? _option.map.baseSize.width : _option.wrap.width,
-          height: _option.map ? _option.map.baseSize.height : _option.wrap.height
+          width: _option.map ? _option.map.baseSize.width : wrapSize.width,
+          height: _option.map ? _option.map.baseSize.height : wrapSize.height
         },
         delete: _option.delete || {
           selector: false,

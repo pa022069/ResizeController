@@ -16,34 +16,36 @@
   <a href="javascript:void(0)" id="delete">delete</a>
   <script src="index.js"></script>
   <script>
-    let mapData;
-    let dev;
-    fetch('data.json')
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (res) {
-        mapData = JSON.parse(res[0].content.ImagemapContent);
-        dev = resizer({
-          container: '#box',
-          add: "#add",
-          wrap: {
-            width: 1040,
-            height: 1040
-          },
-          // remove: "#remove",
-          delete: {
-            selector: "#delete",
-            getDelete: function (res) {
-              console.log(res)
-            }
-          },
-          map: mapData,
-          getActive: function (res) {
-            console.log(res)
-          }
-        });
-      });
+      let mapData;
+      let dev;
+      fetch('data.json')
+          .then(function (response) {
+              return response.json();
+          })
+          .then(function (res) {
+              mapData = JSON.parse(res);
+              dev = resizer({
+                  container: '#box',
+                  add: "#add",
+                  wrap: {
+                      width: 1040,
+                      height: 1040
+                  },
+                  wrapperWidth: 380,
+                  itemDefaultSize: 380,
+                  // remove: "#remove",
+                  delete: {
+                      selector: "#delete",
+                      getDelete: function (res) {
+                          console.log(res)
+                      }
+                  },
+                  map: mapData,
+                  getActive: function (res) {
+                      console.log(res)
+                  }
+              });
+          });
   </script>
 </body>
 

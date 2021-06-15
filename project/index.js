@@ -3,29 +3,31 @@ const resizer = function (_option = {
   item: '.item',
   add: false,
   wrap: {
-    width: 1040,
-    height: 1040
+    width: 0,
+    height: 0
   },
+  wrapStyleWidth: 380,
+  itemDefaultSize: 380,
   delete: {
     selector: false,
     getDelete: () => { },
   },
-  map: [],
+  map: null,
   getActive: () => { },
   size: {}
 }) {
   // 宣告
   const wrapSize = {
-    width: _option.wrap ? _option.wrap.width : 1040,
-    height: _option.wrap ? _option.wrap.height : 1040
+    width: _option.wrap ? _option.wrap.width : 0,
+    height: _option.wrap ? _option.wrap.height : 0
   };
   let init = {
     container: _option.container || 'body',
     item: _option.item || '.item',
     add: _option.add || false,
     wrap: {
-      width: _option.map ? _option.map.baseSize.width : wrapSize.width,
-      height: _option.map ? _option.map.baseSize.height : wrapSize.height
+      width: _option.map ? _option.map.imgSize.width : wrapSize.width,
+      height: _option.map ? _option.map.imgSize.height : wrapSize.height
     },
     delete: _option.delete || {
       selector: false,
@@ -35,13 +37,18 @@ const resizer = function (_option = {
     getActive: _option.getActive || (() => { }),
   }
 
+  // 檢查
+  if (init.wrap.width === 0 || init.wrap.height === 0) {
+    throw "resizer error: wrap size not set.";
+  }
+
   // 暫存
   let saveData = null;
 
   // 容器
   let wrapper = document.querySelector(init.container);
-  wrapper.style.width = `700px`;
-  wrapper.style.height = `${init.wrap.height * (700 / init.wrap.width)}px`;
+  wrapper.style.width = _option.wrapStyleWidth + `px`;
+  wrapper.style.height = `${init.wrap.height * (_option.wrapStyleWidth / init.wrap.width)}px`;
   let wrapperInfo = wrapper.getBoundingClientRect();
 
   let wrapperSize = {
@@ -84,8 +91,8 @@ const resizer = function (_option = {
         item: _option.item || '.item',
         add: _option.add || false,
         wrap: {
-          width: _option.map ? _option.map.baseSize.width : wrapSize.width,
-          height: _option.map ? _option.map.baseSize.height : wrapSize.height
+          width: _option.map ? _option.map.imgSize.width : wrapSize.width,
+          height: _option.map ? _option.map.imgSize.height : wrapSize.height
         },
         delete: _option.delete || {
           selector: false,
@@ -95,8 +102,8 @@ const resizer = function (_option = {
         getActive: _option.getActive || (() => { })
       }
       wrapper = document.querySelector(init.container);
-      wrapper.style.width = `700px`;
-      wrapper.style.height = `${init.wrap.height * (700 / init.wrap.width)}px`;
+      wrapper.style.width = _option.wrapStyleWidth + `px`;
+      wrapper.style.height = `${init.wrap.height * (_option.wrapStyleWidth / init.wrap.width)}px`;
       wrapperInfo = wrapper.getBoundingClientRect();
 
       wrapperSize = {
@@ -203,16 +210,16 @@ const resizer = function (_option = {
   const build = function (_item, _idx, _info = {
     x: 0,
     y: 0,
-    width: 100,
-    height: 100
+    width: _option.itemDefaultSize,
+    height: _option.itemDefaultSize
   }, _func) {
     if (!_item || _idx < 0) return;
 
     let sizeInfo = _info || {
       x: 0,
       y: 0,
-      width: 100,
-      height: 100
+      width: _option.itemDefaultSize,
+      height: _option.itemDefaultSize
     };
 
     saveIdx.push(_idx);
@@ -285,7 +292,7 @@ const resizer = function (_option = {
 
     // Resize 
     let controller = _item.querySelectorAll('span');
-    let minSize = 40;
+    let minSize = 30;
 
     let isReverse = {
       x: false,
@@ -328,7 +335,7 @@ const resizer = function (_option = {
       }
       if (movingPos.x > movingArea.x) {
         _item.style.left = `${movingArea.x}px`;
-      };
+      }
       // position y
       if (movingPos.y >= 0 && movingPos.y <= movingArea.y) {
         _item.style.top = `${movingPos.y}px`;
@@ -338,7 +345,7 @@ const resizer = function (_option = {
       }
       if (movingPos.y > movingArea.y) {
         _item.style.top = `${movingArea.y}px`;
-      };
+      }
     }
 
     // Resize

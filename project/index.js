@@ -201,11 +201,12 @@ const resizer = function (_option = {
   function deleteTargetItem(_item) {
     if (!_item) return;
     const countNum = document.querySelectorAll(`${init.container} ${init.item}`);
-    if(countNum.length < 2) return;
+    if (countNum.length < 2) return;
     init.delete.getDelete(saveActive);
     saveIdx.splice(activeId, 1);
     wrapper.removeChild(_item);
     saveData = updateInfo();
+    itemActive = null;
   }
 
   // 封包程式
